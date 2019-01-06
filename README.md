@@ -1,16 +1,11 @@
-# explorePHP
 support : 
 * only use swoole http server;
 * nginx + swoole http server; 
 * nginx + (php-fpm), no swoole. 
 * Part of the output of CLI in Linux is colorful.
 
-Attention:
-----
-php 7 
+# debug
 
-debug
-----
 strongly recommend:
 
 <blockquote>
@@ -56,3 +51,5 @@ location /{
 </blockquote>
 now "http://test.php.local/index/test" is same to "http://test.php.local/index.php/index/test"
  
+# Attention:
+php 7 
