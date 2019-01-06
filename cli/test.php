@@ -1,6 +1,6 @@
 <?php
 //echo __DIR__;
-require '/home/ffxhd/samba_share/swooleNoob/function/function_debug.php';
+require '/home/ffxhd/samba_share/explorePHP/function/function_debug.php';
 /*echo "\033[1;33m 你好，世界 \033[0m \n";
 echo "\033[1;33m你好，世界\033[0m\n";
 echo "\033[1;33m[你好，世界]\033[0m\n";*/
@@ -18,18 +18,21 @@ foreach ($arr as $color => $value )
     echo "\e[{$value}m {$color} \e[0m \n";
 }*/
 say('几大块的时刻',true);
-say(true);
+//say(true);
 say('几大块的时刻',false);
-say(false);
+//say(false);
 say('几大块的时刻',null);
-say(null);
+//say(null);
 say('几大块的时刻',134.45);
-say(134.45);
+//say(134.45);
 say('几大块的时刻','1');
 say('几大块的时刻','/index/index');
-say('/index/index');
-say('几大块的时刻','');
+//say('/index/index');
+//say('几大块的时刻','');
 say('');
-say('几大块的时刻',['g'=>'gv','g2'=>'gv']);
-say(['g'=>'gv','g2'=>'gv']);
+$a = new \stdClass();
+$a->price=12;
+$a->color='light_blue';
+say('几大块的时刻',['key'=>'string','key2'=>$a]);
+//say(['g'=>'gv','g2'=>'gv']);
 echo $skkjd;
