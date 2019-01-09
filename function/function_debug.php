@@ -219,10 +219,11 @@ class pfDebug
 
     private static function getBodyWhenIsArr($mix, $isCLI, $isStrict)
     {
-        $body = /*true === $isStrict ? var_export($mix,true):*/print_r($mix,true);
+        $body = print_r($mix,true);
         if( true === $isCLI )
         {
-            return  self::cliSetBackgroundColor($body,'magenta');
+            return  $body;
+            //return  self::cliSetBackgroundColor($body,'green');
         }
         $style = <<<EOF
         font-size: 18px;
@@ -323,6 +324,19 @@ EOF;
         print_r($mix);
     }
     echo $arrStyle_end;
+}
+
+function stop()
+{
+    global $server;
+    $html = ob_get_clean();
+    $response = $_SERVER['swooleResponse'];
+    $response->end($html);
+    //测试过的，可行的办法：
+    trigger_error('prevent php code run ',E_USER_ERROR);
+    //测试过的，另一种可行的办法：强行杀死当前worker进程
+    /*$pid = $server->worker_pid;
+    exec("kill -9 {$pid}");*/
 }
 
 /**

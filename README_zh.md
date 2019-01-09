@@ -4,6 +4,13 @@
 * nginx + (php-fpm), 没有 swoole. 
 * 在Linux中的CLI,部分输出是五彩缤纷的.
 
+#swoole
+支持传统的一些开发习惯，比如
+* 使用$_SESSION进行会话；
+* 需要输出，直接在控制器中echo、var_dump();
+
+请使用stop()代替exit/die;
+
 # debug
 强烈推荐:
 <blockquote>
@@ -49,3 +56,4 @@ location /{
 * php 7 
 * 如果用到swoole, 为了热更新onRequest目录中的文件，php需要inotify扩展;
 * 如果用到swoole, 为了会话，需要安装redis，php需要redis扩展。
+* 为了worker 报告php出错了，浏览器不能获得相应之时，能够回过神来，建议安装文本转语音的软件：apt-get install espeak。

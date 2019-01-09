@@ -15,6 +15,14 @@ class Index{
         include OnRequestDir.'/public/index.html';
        say('hello, i am swoole index from Index ctrl
 <br/>');
+       //say('$_SERVER',$_SERVER);
+       stop();
+       //trigger_error('this an user error',E_USER_ERROR);
+       /*$time = $_SERVER['request_time'];
+       $time = date('Y-m-d H:i:s',$time);
+       //Linux 写入文件需要先赋予权限，否则会失败
+       file_put_contents(ROOT.'/txt/test.txt',$time.PHP_EOL);*/
+       say('stop之后，我再说一句, blabla...<br/>');
     }
 
     /*public function coroutine()

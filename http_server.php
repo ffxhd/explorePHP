@@ -41,6 +41,5 @@ $server->on('WorkerStart', [ $callbackObj, 'onWorkerStart' ]);
 $server->on('WorkerError', [ $callbackObj, 'onWorkerError' ]);
 $server->on('Connect', [ $callbackObj, 'onConnect' ]);
 $server->on('Close', [ $callbackObj, 'onClose' ]);
-$server->on('Receive', [ $callbackObj, 'onReceive' ]);
 $server->on('Request', [ $callbackObj, 'onRequest' ]);
 $server->start();

@@ -14,6 +14,7 @@ use onRequest\core\session\SessionFactory;
  */
 class HttpServer
 {
+    public static $workerId = null;
     /**
     swoole_server $server是Swoole\Server对象
     int $fd  是连接的文件描述符，发送数据/关闭连接时需要此参数
@@ -48,12 +49,6 @@ class HttpServer
         //\console::sayMultiInTerminal('-onClose',$_POST);
     }
 
-    //作为http_server不接受onReceive回调设置
-    public function onReceive( $server, int $fd, int $reactor_id, string $data)
-    {
-
-    }
-
     //
     public function onRequest($request, $response)
     {
@@ -66,6 +61,7 @@ class HttpServer
         }
         /*say('onRequest--$request',$request,
             '$response',$response);*/
+        $response->header("Content-Type", "text/html; charset=utf-8");
         ob_start();
         try{
             //
@@ -79,6 +75,8 @@ class HttpServer
             $_SERVER['SERVER_NAME'] = $host;
             $_SERVER['REQUEST_URI'] = $uri;
             $_SERVER = array_merge($_SERVER,$request->server);
+            //为了可以半路停下来
+            $_SERVER['swooleResponse'] = $response;
             //
             isAjaxOrNot( $request->header);
             /*根据cookie，到session池中取出数据，赋值给$_SESSION，
@@ -103,7 +101,6 @@ class HttpServer
             say($previous,'$previous');*/
             throw_phpError($errCode,$errMsg, $errFile,$errLine,$errTrace);
         }
-        $response->header("Content-Type", "text/html; charset=utf-8");
         $html = ob_get_clean();
         $response->end($html);
     }
@@ -116,12 +113,21 @@ class HttpServer
      * @param $exit_code
      * @param $signal
      */
-    public function onWorkerError($server, $worker_id,$worker_pid,$exit_code,$signal)
+    public function onWorkerError($server,  int $worker_id, int $worker_pid, int $exit_code, int $signal)
     {
+        /*signal = 11：说明Worker进程发生了segment fault段错误，可能触发了底层的BUG，
+        请收集core dump信息和valgrind内存检测日志，向我们反馈此问题
+        exit_code = 255：说明Worker进程发生了Fatal Error致命错误，请检查PHP的错误日志，
+        找到存在问题的PHP代码，进行解决
+        signal = 9：说明Worker被系统强行Kill，请检查是否有人为的kill -9操作，
+        检查dmesg信息中是否存在OOM（Out of memory）
+        如果存在OOM，分配了过大的内存。检查Server的setting配置，
+        是否创建了非常大的Swoole\Table、Swoole\Buffer等内存模块*/
         say('woker出现错误--', $worker_id,
             '$worker_pid', $worker_pid,
             '$exit_code', $exit_code,
             '$signal', $signal);
+        exec("espeak 'worker error'");
     }
 
     /**如果想使用Reload机制实现代码重载入，必须在onWorkerStart中require你的业务文件，
@@ -142,6 +148,10 @@ class HttpServer
      */
     public function onWorkerStart($server, $worker_id)
     {
+        say('onWorkerStart--赋值之前self::$workerId =',self::$workerId );
+        self::$workerId = $worker_id;
+        say('onWorkerStart--赋值之后self::$workerId=',self::$workerId ,
+            'pid=',$server->worker_pid);
         //热更新
        /* $startTime = date('Y-m-d H:i:s',time());
        \console::sayMultiInTerminal($startTime.'--onWorkerStart--$worker_id',
