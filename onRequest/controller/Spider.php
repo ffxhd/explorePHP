@@ -13,14 +13,11 @@ class Spider
 {
     public function index()
     {
-        $data = QueryList::get('https://www.baidu.com/s?wd=QueryList')
-            // 设置采集规则
-            ->rules([
-                'title'=>array('h3','text'),
-                'link'=>array('h3>a','href')
-            ])
-            ->queryData();
-
+        require  ROOT.'/phpLibrary/Tightenco/Collect/Support/helpers.php';
+        require  ROOT.'/phpLibrary/GuzzleHttp/src/functions.php';
+        require  ROOT.'/phpLibrary/GuzzleHttp/Psr7/functions.php';
+        //require '/home/ffxhd/samba_share/swooleNoob/phpLibrary/QL/QueryList.php';
+        $data = QueryList::get('http://www.nipic.com')->find('img')->attrs('src');;
         say($data);
     }
 }
