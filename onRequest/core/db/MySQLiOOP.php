@@ -3,6 +3,8 @@ namespace onRequest\core\db;;
 //MySQLi面向对象
 class MySQLiOOP{
     private $conn = null;
+    private $stmt = null ;
+    protected $sqlArr = [];
     /**
      * 报错函数
      * @param $error
@@ -11,7 +13,7 @@ class MySQLiOOP{
     private function err($error,$errPrefix = '对不起,您的操作有误,原因是:')
     {
         $str = <<<EOF
-            <div style="font-size: 30px;">
+            <div style="font-size: 30px;width: 80%">
                 <span style="color:red;">{$errPrefix}</span>
                 <div style="display:inline-block;background-color:#FFFF00;">{$error}</div>
             </div><br/>
@@ -29,6 +31,7 @@ EOF;
      */
     public function __construct($host,$user,$password,$databaseName,$charset)
     {
+        $this->sqlArr = [];
         if(  $this->conn != null )
         {
             return null;
@@ -49,6 +52,14 @@ EOF;
         return $conn;
     }
 
+    public function __destruct()
+    {
+        // TODO: Implement __destruct() method.
+        $this->conn->close();
+        $this->sqlArr = [];
+        $this->stmt = null;
+    }
+
     public function selectDB($db_name)
     {
         $conn = $this->conn;
@@ -56,6 +67,11 @@ EOF;
         {
             $this->err('<mark>select_db错误：'.$conn->error.'</mark>');
         }
+    }
+
+    public function fetchSqlArr()
+    {
+        return $this->sqlArr;
     }
 
     /**
@@ -66,6 +82,7 @@ EOF;
     function query($sql)
     {
         //say($sql,'$sql');
+        $this->sqlArr[] = $sql;
         $conn = $this->conn;
         $query = $conn->query($sql);
         if($query !== false )
@@ -147,7 +164,7 @@ EOF;
     {
         /* fetch object array */
         $i = 0;
-        while ( $obj  =  $query -> fetch_object ()) 
+        while ( $obj  =  $query -> fetch_object ())
         {
             if($i == $row )
             {
@@ -191,6 +208,11 @@ EOF;
         $conn = $this->conn;
         //例如$preSql="INSERT INTO MyGuests (firstname, lastname, email) VALUES(?, ?, ?)";
         $stmt = $conn->prepare($preSql);//插入，更新
+        if(false === $stmt)
+        {
+            $this->err("预处理语句有错误：<pre>{$preSql}</pre>");
+        }
+        $this->stmt = $stmt;
         return $stmt;
         //注意 主键未设置自增，循环插入会全部失败--2017-12-22
         /* 以下外界使用
@@ -214,6 +236,21 @@ EOF;
         $conn->close(); */
     }
 
+    public function stmtExecuteResult()
+    {
+        //$stmt->affected_rows === -1
+        if( false === is_object($this->stmt))
+        {
+            return false;
+        }
+        if(  false === empty($this->stmt->error_list))
+        {
+            $this->err('预处理语句执行出错');
+            say('预处理语句执行出错 ',$this->stmt->error_list );
+            return false;
+        }
+        return true;
+    }
 
     /**修改函数
      * @param string $table  表名

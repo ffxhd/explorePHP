@@ -67,7 +67,8 @@ class HttpServer
             //
             $_GET     = $request->get ?? [];
             $_POST    = $request->post ?? [];
-            $_REQUEST = $request->request ?? [];
+            //$_REQUEST = $request->request ?? [];
+            $_REQUEST = array_merge($_GET,$_POST);
             $_COOKIE  = $request->cookie ?? [];
             $_FILES   = $request->files ?? [];
             global $host;

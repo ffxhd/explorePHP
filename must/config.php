@@ -16,9 +16,9 @@ $config = array(
     //必需
     'db_config'=>array(
         'host'   =>'127.0.0.1',
-        'user'   =>'root',
-        'password'    =>'root',
-        'databaseName'   =>'myTest',
+        'user'   =>'ffxhd',
+        'password'    =>'mysql_remote=ffxhd2018',
+        'databaseName'   =>'pvp',
         'charset'=>'utf8',
         'class' => '\\onRequest\\core\\db\\MySQLiOOP'
     ),
