@@ -16,3 +16,5 @@ _book
 *.pdf
 /onRequest/spiderModel/PvpProp.php
 vendor
+/onRequest/model/Excel2Sql.php
+/onRequest/controller/Index.php
