@@ -4,53 +4,53 @@
     <meta charset="UTF-8">
     <title>测试英雄</title>
     <script src="../js/library/jquery-3.3.1.min.js"></script>
+    <style>
+        .test{
+            margin-left: 2%;
+        }
+    </style>
 </head>
-<body>
+<body style="font-size: 20px">
 <!--<p>选项卡  /spider/getPvpTabs</p>-->
 <!--<img src="/onRequest/public/images/pvp/tabs.jeg"/ >-->
-<p>获取 英雄单选框数据   /spider/getHeroSearchRadios</p>
+<p>
+    获取 英雄单选框数据
+    <span class="testUrl">
+        /<span class="controller">pvp</span>/<span>getHeroSearchRadios</span>
+    </span>
+    <a href="" target="_blank" class="test">测试</a>
+</p>
 <img src="/onRequest/public/images/pvp/heroRadios.png?v=2"/>
+<p>方式 GET , 无需参数</p>
 <p>返回数据：json格式的字符串</p>
 <pre>
-Array
-(
-    [0] => Array
-        (
-            [radio_text] => 本周免费
-            [data_p_type] => 10
-            [data_type] =>
-        )
-
-    [1] => Array
-        (
-            [radio_text] => 新手推荐
-            [data_p_type] => 11
-            [data_type] =>
-        )
-
-    [2] => Array
-        (
-            [radio_text] => 全部
-            [data_p_type] =>
-            [data_type] => 0
-        )
-
-    [3] => Array
-        (
-            [radio_text] => 坦克
-            [data_p_type] =>
-            [data_type] => 3
-        )
-
-    [4] => Array
-        (
-            [radio_text] => 战士
-            [data_p_type] =>
-            [data_type] => 1
-        )
+[
+    {
+        "id": "1",
+        "radio_text": "本周免费",
+        "data_p_type": "10",
+        "data_type": null
+    },
+    {
+        "id": "2",
+        "radio_text": "新手推荐",
+        "data_p_type": "11",
+        "data_type": null
+    },
+    {
+        "id": "3",
+        "radio_text": "全部",
+        "data_p_type": null,
+        "data_type": "0"
+    },
 </pre>
 <hr/>
-<p>英雄列表  /spider/getHeroesList</p>
+<p>英雄列表
+    <span class="testUrl">
+        /<span class="controller">pvp</span>/<span>getHeroesList</span>
+    </span>
+    <a href="" target="_blank" class="test">测试</a>
+</p>
 参数：<br/>
 <ul>
     <li>complex  新手推荐（参数值必须是novice_recommendation） /  本周免费</li>
@@ -68,133 +68,126 @@ Array
 </ul>
 <p>返回数据：json格式的字符串</p>
 <pre>
-Array
-(
-    [0] => Array
-        (
-            [id] => 9
-            [ename] => 113
-            [cname] => 庄周
-            [title] => 逍遥梦幻
-            [new_type] => 0
-            [hero_type] => 6
-            [hero_type2] => 3
-            [pay_type] =>
-            [skin_name] => 逍遥幻梦|鲤鱼之梦|蜃楼王|云端筑梦师
-            [detail_href] => https://pvp.qq.com/web201605/herodetail/113.shtml
-            [hero_avatar] => https://game.gtimg.cn/images/yxzj/img201606/heroimg/113/113.jpg
-        )
-
-    [1] => Array
-        (
-            [id] => 14
-            [ename] => 118
-            [cname] => 孙膑
-            [title] => 逆流之时
-            [new_type] => 0
-            [hero_type] => 6
-            [hero_type2] => 2
-            [pay_type] =>
-            [skin_name] => 逆流之时|未来旅行|天使之翼|妖精王
-            [detail_href] => https://pvp.qq.com/web201605/herodetail/118.shtml
-            [hero_avatar] => https://game.gtimg.cn/images/yxzj/img201606/heroimg/118/118.jpg
-        )
-
-    [2] => Array
-        (
-            [id] => 15
-            [ename] => 119
-            [cname] => 扁鹊
-            [title] => 善恶怪医
-            [new_type] => 0
-            [hero_type] => 2
-            [hero_type2] => 6
-            [pay_type] =>
-            [skin_name] => 善恶怪医|救世之瞳|化身博士|炼金王
-            [detail_href] => https://pvp.qq.com/web201605/herodetail/119.shtml
-            [hero_avatar] => https://game.gtimg.cn/images/yxzj/img201606/heroimg/119/119.jpg
-        )
+[
+    {
+        "id": "1",
+        "ename": "105",
+        "cname": "廉颇",
+        "title": "正义爆轰",
+        "new_type": "0",
+        "hero_type": "3",
+        "hero_type2": null,
+        "pay_type": null,
+        "skin_name": "正义爆轰|地狱岩魂",
+        "detail_href": "https://pvp.qq.com/web201605/herodetail/105.shtml",
+        "hero_avatar": "https://game.gtimg.cn/images/yxzj/img201606/heroimg/105/105.jpg"
+    },
+    {
+        "id": "2",
+        "ename": "106",
+        "cname": "小乔",
+        "title": "恋之微风",
+        "new_type": "0",
+        "hero_type": "2",
+        "hero_type2": null,
+        "pay_type": null,
+        "skin_name": "恋之微风|万圣前夜|天鹅之梦|纯白花嫁|缤纷独角兽",
+        "detail_href": "https://pvp.qq.com/web201605/herodetail/106.shtml",
+        "hero_avatar": "https://game.gtimg.cn/images/yxzj/img201606/heroimg/106/106.jpg"
+    },
 </pre>
 <hr/>
-<p>局内道具单选搜索框  /spider/getItemSearchRadios</p>
+<p>局内道具单选搜索框
+    <span class="testUrl">
+        /<span class="controller">pvp</span>/<span>getItemSearchRadios</span>
+    </span>
+    <a href="" target="_blank" class="test">测试</a>
+</p>
 <img src="/onRequest/public/images/pvp/itemRadios_2.png"/>
 <img src="/onRequest/public/images/pvp/itemRadios.png"/>
 <p>返回结果：</p>
 <pre>
-    Array
-(
-    [0] => Array
-        (
-            [id] => 1
-            [radio_text] => 常规模式
-            [data_type] => 0
-            [children] => Array
-                (
-                    [0] => Array
-                        (
-                            [id] => 3
-                            [radio_text] => 全部
-                            [data_parent_type] => 0
-                            [data_type] => 0
-                        )
-
-                    [1] => Array
-                        (
-                            [id] => 5
-                            [radio_text] => 攻击
-                            [data_parent_type] => 0
-                            [data_type] => 1
-                        )
+    [
+    {
+        "id": "1",
+        "radio_text": "常规模式",
+        "data_type": "0",
+        "children": [
+            {
+                "id": "3",
+                "radio_text": "全部",
+                "data_parent_type": "0",
+                "data_type": "0"
+            },
+            {
+                "id": "5",
+                "radio_text": "攻击",
+                "data_parent_type": "0",
+                "data_type": "1"
+            },
 </pre>
 <hr/>
-<p>局内道具列表 /spider/getItemList</p>
+<p>局内道具列表
+    <span class="testUrl">
+        /<span class="controller">pvp</span>/<span>getItemList</span>
+    </span>
+    <a href="" target="_blank" class="test">测试</a>
+</p>
 <p>返回数据：</p>
 <pre>
-    Array
-(
-[8] => Array
-        (
-            [id] => 9
-            [des1] => Array
-                (
-                    [0] => +15%攻击速度
-                    [1] => +10%暴击率
-                    [2] => +5%移速
-                )
-            [item_id] => 1123
-            [item_name] => 狂暴双刃
-            [item_type] => 1
-            [price] => 534
-            [total_price] => 890
-            [item_img] => https://game.gtimg.cn/images/yxzj/img201606/itemimg/1123.jpg
-        )
+[
+    {
+        "id": "1",
+        "des1": [
+            "+20物理攻击"
+        ],
+        "item_id": "1111",
+        "item_name": "铁剑",
+        "item_type": "1",
+        "price": "150",
+        "total_price": "250",
+        "item_img": "https://game.gtimg.cn/images/yxzj/img201606/itemimg/1111.jpg"
+    },
+    {
+        "id": "2",
+        "des1": [
+            "+10%攻击速度 "
+        ],
+        "item_id": "1112",
+        "item_name": "匕首",
+        "item_type": "1",
+        "price": "174",
+        "total_price": "290",
+        "item_img": "https://game.gtimg.cn/images/yxzj/img201606/itemimg/1112.jpg"
+    },
 </pre>
 <hr/>
-<p>召唤师列表 /spider/getSummonerList</p>
+<p>召唤师列表
+    <span class="testUrl">
+        /<span class="controller">pvp</span>/<span>getSummonerList</span>
+    </span>
+    <a href="" target="_blank" class="test">测试</a>
+</p>
 <pre>
-    Array
-(
-    [0] => Array
-        (
-            [id] => 1
-            [summoner_description] => 30秒CD：对身边的野怪和小兵造成真实伤害并眩晕1秒
-            [summoner_id] => 80104
-            [summoner_name] => 惩击
-            [summoner_rank] => LV.1解锁
-            [summoner_img] => https://game.gtimg.cn/images/yxzj/img201606/summoner/80104.jpg
-            [big_img] => https://game.gtimg.cn/images/yxzj/img201606/summoner/80104-big.jpg
-        )
-
-    [1] => Array
-        (
-            [id] => 2
-            [summoner_description] => 90秒CD：立即对身边敌军英雄造成其已损失生命值14%的真实伤害
-            [summoner_id] => 80108
-            [summoner_name] => 终结
-            [summoner_rank] => LV.3解锁
-            [summoner_img] => https://game.gtimg.cn/images/yxzj/img201606/summoner/80108.jpg
-            [big_img] => https://game.gtimg.cn/images/yxzj/img201606/summoner/80108-big.jpg
-        )
+[
+    {
+        "id": "1",
+        "summoner_description": "30秒CD：对身边的野怪和小兵造成真实伤害并眩晕1秒",
+        "summoner_id": "80104",
+        "summoner_name": "惩击",
+        "summoner_rank": "LV.1解锁",
+        "summoner_img": "https://game.gtimg.cn/images/yxzj/img201606/summoner/80104.jpg",
+        "big_img": "https://game.gtimg.cn/images/yxzj/img201606/summoner/80104-big.jpg"
+    },
+    {
+        "id": "2",
+        "summoner_description": "90秒CD：立即对身边敌军英雄造成其已损失生命值14%的真实伤害",
+        "summoner_id": "80108",
+        "summoner_name": "终结",
+        "summoner_rank": "LV.3解锁",
+        "summoner_img": "https://game.gtimg.cn/images/yxzj/img201606/summoner/80108.jpg",
+        "big_img": "https://game.gtimg.cn/images/yxzj/img201606/summoner/80108-big.jpg"
+    },
 </pre>
 <div id="ajaxError"></div>
 <div id="ajaxSuccess"></div>
@@ -241,7 +234,7 @@ Array
         {
             let _this = this;
             $.ajax({
-                url : "/spider/getHeroesList",
+                url : "/Pvp/getHeroesList",
                 type: "GET",
                 dataType : "json",
                 before:function(xhr)
@@ -255,7 +248,7 @@ Array
                 success:function(result)
                 {
                     _this.heroList_php = result;
-                    _this.showSth();
+                   // _this.showSth();
                 },
                 error:function(xhr,status,error)
                 {
@@ -282,10 +275,24 @@ Array
 
         }
     }
-     /*let obj = new Test();
+     let obj = new Test();
     obj.init();
     obj.getHeroList();
-    obj.getHeroJson();*/
+    //obj.getHeroJson();
+    $(document).ready(function(){
+        let a_arr = $("a.test");
+        //console.log('a_arr=',a_arr);
+        let href = '', ctrl ='', method = '';
+        let spanObj = null;
+        a_arr.each(function(index,currentItem){
+            //console.log('currentItem=',currentItem);
+            spanObj = $(currentItem).prev();
+            ctrl  = spanObj.children().eq(0).text();
+            method  = spanObj.children().eq(1).text();
+            href = `/${ctrl}/${method}`;
+            $(currentItem).attr("href",href)
+        });
+    });
 </script>
 </body>
 </html>

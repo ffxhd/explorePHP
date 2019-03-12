@@ -12,6 +12,7 @@ use must\DB;
 class PvpSpider
 {
     protected $urlBase = 'https://pvp.qq.com/web201605';
+    protected $jsonFilePath = ROOT.'/onRequest/public/pvp';
     //
     protected $heroQL;
     protected $heroListUrl = '/herolist.shtml';
@@ -104,7 +105,8 @@ class PvpSpider
 
     public function saveHeroesJsonToFile($str):int
     {
-        $file = ROOT.'/onRequest/public/spider/download_heroList.json';
+        $path = $this->jsonFilePath;
+        $file = $path.'/download_heroList.json';
         if(false === file_exists($file))
         {
             touch($file);
@@ -368,7 +370,8 @@ class PvpSpider
 
     public function saveItemJsonToFile($str):int
     {
-        $file = ROOT.'/onRequest/public/spider/download_itemList.json';
+        $path = $this->jsonFilePath;
+        $file = $path.'/download_itemList.json';
         if(false === file_exists($file))
         {
             touch($file);
@@ -452,7 +455,8 @@ class PvpSpider
 
     public function saveSummonerJsonToFile($str):int
     {
-        $file = ROOT.'/onRequest/public/spider/download_summoner.json';
+        $path = $this->jsonFilePath;
+        $file = $path.'/download_summoner.json';
         if(false === file_exists($file))
         {
             touch($file);

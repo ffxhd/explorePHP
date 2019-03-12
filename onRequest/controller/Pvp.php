@@ -12,11 +12,24 @@ use must\DB;
 class Pvp
 {
     protected  $isDebug = true;
+    public function __construct()
+    {
+        $debug = getItemFromArray($_GET,'debug','');
+        $this->isDebug = $debug === 'true' || $debug === '1';
+    }
+
     protected function outputData($data,$debugMsg = '')
     {
-        if( true === $_SERVER['IS_AJAX'] || false === $this->isDebug )
+        if( true === $_SERVER['IS_AJAX'] )//=== $_SERVER['IS_AJAX']
         {
-            echo json_encode($data,JSON_UNESCAPED_UNICODE);
+            echo json_encode($data,JSON_UNESCAPED_UNICODE );
+            return true;
+        }
+        if( false === $this->isDebug)
+        {
+            echo '<pre style="font-size:22px">'.
+                json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT ).
+                '</pre>';
         }
         else
         {
@@ -37,7 +50,7 @@ class Pvp
     {
         $obj = new  PvpSpider();
         $data = $obj->getHeroSearchRadios();
-        if( false === $_SERVER['IS_AJAX'] || true === $this->isDebug )
+        if( false === $_SERVER['IS_AJAX'] && true === $this->isDebug )
         {
             say('sql', DB::fetchSqlArr());
         }
@@ -87,7 +100,7 @@ class Pvp
         stop();*/
         $obj = new  PvpSpider();
         $data = $obj->getHeroesList($where);
-        if( false === $_SERVER['IS_AJAX'] || true === $this->isDebug )
+        if( false === $_SERVER['IS_AJAX'] && true === $this->isDebug )
         {
             say('sql',DB::fetchSqlArr());
             $L  = count($data);
@@ -111,7 +124,7 @@ class Pvp
     {
         $obj = new  PvpSpider();
         $data = $obj->getItemSearchRadios();
-        if( false === $_SERVER['IS_AJAX'] || true === $this->isDebug )
+        if( false === $_SERVER['IS_AJAX'] && true === $this->isDebug )
         {
             say('sql', DB::fetchSqlArr());
         }
@@ -166,7 +179,7 @@ class Pvp
         stop();*/
         $obj = new  PvpSpider();
         $data = $obj->getItemList($where);
-        if( false === $_SERVER['IS_AJAX'] || true === $this->isDebug )
+        if( false === $_SERVER['IS_AJAX'] && true === $this->isDebug )
         {
             say('sql',DB::fetchSqlArr());
             $L  = count($data);
@@ -189,7 +202,7 @@ class Pvp
     {
         $obj = new  PvpSpider();
         $data = $obj->getSummonerList();
-        if( false === $_SERVER['IS_AJAX'] || true === $this->isDebug )
+        if( false === $_SERVER['IS_AJAX'] && true === $this->isDebug )
         {
             say('sql',DB::fetchSqlArr());
             $L  = count($data);
