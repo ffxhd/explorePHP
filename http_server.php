@@ -1,7 +1,9 @@
 <?php
 const ROOT = __DIR__;
 require ROOT . '/must/index_common.php';
-define('IS_LOCAL', strpos($config['host'],'local') !== false);
+$hostName = gethostname();
+define('IS_LOCAL', $hostName === 'ffxhd-ubuntu');
+require ROOT . '/must/config.php';
 $isCLi = isRunInCLI();
 if(false === $isCLi )
 {
@@ -28,7 +30,7 @@ exit;*/
  */
 $server = new  \Swoole\Http\Server($config['host'], 9501);
 $server->set([
-    'document_root' => ROOT.'/public',
+    'document_root' => OnRequestDir.'/public',
     'enable_static_handler' => true,
 ]);
 //

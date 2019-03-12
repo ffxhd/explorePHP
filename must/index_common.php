@@ -2,7 +2,6 @@
 date_default_timezone_set('PRC');//PRC，中华人民共和国，People's Republic of China
 $get_magic_quotes_gpc_result = get_magic_quotes_gpc();
 const OnRequestDir = ROOT.'/onRequest';
-require ROOT . '/must/config.php';
 require ROOT . '/must/Autoload.php';
 require ROOT . '/vendor/autoload.php';
 $functionsPath = ROOT.'/function';

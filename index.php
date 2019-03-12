@@ -4,6 +4,7 @@ header('Content-type:text/html;charset=utf-8');
 define('ROOT',$_SERVER['DOCUMENT_ROOT']);
 require ROOT . '/must/index_common.php';
 define('IS_LOCAL', strpos($_SERVER['SERVER_NAME'],'local') !== false);
+require ROOT . '/must/config.php';
 isAjaxOrNot($_SERVER);
 try{
     \must\PC::run($config);

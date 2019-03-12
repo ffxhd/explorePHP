@@ -1,6 +1,6 @@
 <?php
 $config = array(
-    'host'=>'test.swoole.local',
+    'host'=> true ===IS_LOCAL ? 'test.swoole.local' : '139.180.147.165',
     'favicon_ico'=>ROOT.'/favicon.ico',
     'session'=>[
         'name'=>'PHPSESSID',
@@ -18,7 +18,7 @@ $config = array(
         'host'   =>'127.0.0.1',
         'user'   =>'ffxhd',
         'password'    =>'mysql_remote=ffxhd2018',
-        'databaseName'   =>'pvp',
+        'databaseName'   => true ===IS_LOCAL ? 'pvp':'honor_of_kings',
         'charset'=>'utf8',
         'class' => '\\onRequest\\core\\db\\MySQLiOOP'
     ),
