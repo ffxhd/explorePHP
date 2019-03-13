@@ -14,34 +14,14 @@ class Pvp
     protected  $isDebug = true;
     public function __construct()
     {
-        $debug = getItemFromArray($_GET,'debug','');
-        $this->isDebug = $debug === 'true' || $debug === '1';
-    }
-
-    protected function outputData($data,$debugMsg = '')
-    {
-        if( true === $_SERVER['IS_AJAX'] )//=== $_SERVER['IS_AJAX']
-        {
-            echo json_encode($data,JSON_UNESCAPED_UNICODE );
-            return true;
-        }
-        if( false === $this->isDebug)
-        {
-            echo '<pre style="font-size:22px">'.
-                json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT ).
-                '</pre>';
-        }
-        else
-        {
-            say($debugMsg,$data);
-        }
+        $this->isDebug = isDebugApi();
     }
 
     public function getPvpTabs()
     {
         $obj = new  PvpSpider();
         $data = $obj->getPvpTabs();
-        $this->outputData($data,__FUNCTION__.'--选项卡');
+        outputApiData($data,__FUNCTION__.'--选项卡');
     }
 
     //===============================================================
@@ -54,7 +34,7 @@ class Pvp
         {
             say('sql', DB::fetchSqlArr());
         }
-        $this->outputData($data,__FUNCTION__.'--英雄--搜索单选框');
+        outputApiData($data,__FUNCTION__.'--英雄--搜索单选框');
     }
 
     public function updateHeroSearchRadiosForcibly()
@@ -109,7 +89,7 @@ class Pvp
             sort($cNameArr,SORT_STRING );
             say('cName',$cNameArr);
         }
-        $this->outputData($data,__FUNCTION__.'--所有英雄');
+        outputApiData($data,__FUNCTION__.'--所有英雄');
     }
 
     public function updateHeroesListForcibly()
@@ -128,7 +108,7 @@ class Pvp
         {
             say('sql', DB::fetchSqlArr());
         }
-        $this->outputData($data,__FUNCTION__.'-道具--搜索单选框');
+        outputApiData($data,__FUNCTION__.'-道具--搜索单选框');
     }
 
     public function updateItemSearchRadiosForcibly()
@@ -188,7 +168,7 @@ class Pvp
             sort($cNameArr,SORT_STRING );
             say('cName',$cNameArr);
         }
-        $this->outputData($data,__FUNCTION__.'--所有道具');
+        outputApiData($data,__FUNCTION__.'--所有道具');
     }
 
     public function updateItemListForcibly()
@@ -211,7 +191,7 @@ class Pvp
             sort($cNameArr,SORT_STRING );
             say('cName',$cNameArr);
         }
-        $this->outputData($data,__FUNCTION__.'--所有召唤师技能');
+        outputApiData($data,__FUNCTION__.'--所有召唤师技能');
     }
 
     //===============================================================

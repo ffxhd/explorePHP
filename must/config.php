@@ -4,7 +4,7 @@ $config = array(
     'favicon_ico'=>ROOT.'/favicon.ico',
     'session'=>[
         'name'=>'PHPSESSID',
-        'expireTime'=>  60 * 3,//session的过期时间(秒）,
+        'expireTime'=>  60 * 60 * 4,//session的过期时间(秒）,
         'redis_db'=> 0,
     ],
     //
@@ -25,7 +25,7 @@ $config = array(
     'redis'=>[
         'host'=>'127.0.0.1',
         'port'=>6379,
-        'password'=>'u1804-redis-psw'
+        'password'=>true ===IS_LOCAL ?'u1804-redis-psw':'u1810-redis-psw'
     ]
 
     //================================================

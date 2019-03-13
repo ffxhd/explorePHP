@@ -83,7 +83,7 @@ class HttpServer
             /*根据cookie，到session池中取出数据，赋值给$_SESSION，
             如果cookie中的PHPSESSID为空，需要生成唯一的sessionId
             便于业务操作*/
-            $requestTime = $_SERVER['request_time'];
+            $requestTime = $_SERVER['REQUEST_TIME'] = $_SERVER['request_time'];
             $session_id = SessionFactory::initialSessionFromPool($request->fd,$response,$requestTime);
             //业务操作
             global $config;

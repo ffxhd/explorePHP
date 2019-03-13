@@ -8,6 +8,29 @@
         .test{
             margin-left: 2%;
         }
+        .dialog{
+            position: fixed;
+            left:0;
+            top:0;
+            display: none;
+            width: 100%;
+            height: 100%;
+            background-color: darkgray;
+        }
+        .show{
+            display: block;
+        }
+        .dialogContainer{
+            margin: 5% 2% 2% 2%;
+            /*width: 80%;*/
+            height: 85%;
+            overflow: scroll;
+            background-color: white;
+        }
+        .dialogCloseBtn{
+            float:right;
+            margin-right: 5%;
+        }
     </style>
 </head>
 <body style="font-size: 20px">
@@ -20,7 +43,7 @@
     </span>
     <a href="" target="_blank" class="test">测试</a>
 </p>
-<img src="/onRequest/public/images/pvp/heroRadios.png?v=2"/>
+<img src="/onRequest/public/images/pvp/heroRadios.png?v=2" alt=""/>
 <p>方式 GET , 无需参数</p>
 <p>返回数据：json格式的字符串</p>
 <pre>
@@ -103,8 +126,8 @@
     </span>
     <a href="" target="_blank" class="test">测试</a>
 </p>
-<img src="/onRequest/public/images/pvp/itemRadios_2.png"/>
-<img src="/onRequest/public/images/pvp/itemRadios.png"/>
+<img src="/onRequest/public/images/pvp/itemRadios_2.png" alt=""/>
+<img src="/onRequest/public/images/pvp/itemRadios.png" alt=""/>
 <p>返回结果：</p>
 <pre>
     [
@@ -189,53 +212,81 @@
         "big_img": "https://game.gtimg.cn/images/yxzj/img201606/summoner/80108-big.jpg"
     },
 </pre>
-<div id="ajaxError"></div>
+<hr/>
+<div id="user_mod">
+    <p>注册--POST--
+        <span class="testUrl">
+            /<span class="controller">user</span>/<span>register</span>
+        </span>
+    </p>
+    <p>用户名是否唯一--POST--
+        <span class="testUrl">
+            /<span class="controller">user</span>/<span>isUniqueUserName</span>
+        </span>
+    </p>
+    <p>登录--POST--
+        <span class="testUrl">
+            /<span class="controller">user</span>/<span>login</span>
+        </span>
+    </p>
+    <label for="userName">用户名</label><input type="text" id="userName"/>
+    <label for="password">密码</label><input type="text" id="password"/>
+    <button type="button" onclick="obj.register(this)" data-url="">注册</button>
+    <button type="button" onclick="obj.isUnique(this)" data-url="">用户名是否唯一</button>
+    <button type="button" onclick="obj.login(this)" data-url="">登录</button>
+    <hr/>
+
+    <p>
+        获取用户信息
+        <span class="testUrl">
+            /<span class="controller">user</span>/<span>getUserInfo</span>
+        </span>
+    </p>
+    用户名:<span id="userInfo_userName"></span>
+    <img src="" alt="">
+    <button type="button" onclick="obj.getUserInfo(this)" data-url="">获取用户信息</button>
+    <hr/>
+
+    <p>上传头像
+        <span class="testUrl">
+            /<span class="controller">user</span>/<span>uploadAvatar</span>
+        </span>
+    </p>
+    <label for="avatar">上传头像</label><input type="file" id="avatar"/>
+    <button type="button" onclick="obj.uploadAvatar(this)" data-url="">上传头像</button>
+    <hr/>
+
+    <p>
+        修改用户资料
+        <span class="testUrl">
+            /<span class="controller">user</span>/<span>editUserInfo</span>
+        </span>
+    </p>
+    <button type="button" onclick="obj.editUserInfo(this)" data-url="">修改用户资料</button>
+    <hr/>
+</div>
+
+<div id="dialog" class="dialog">
+    <button type="button" class="dialogCloseBtn" onclick="obj.closeDialog()">关闭</button>
+    <div id="ajaxError" class="dialogContainer">ajax错误</div>
+</div>
 <div id="ajaxSuccess"></div>
 <script>
     class Test{
         init()
         {
-            this.heroList_json = [];
-            this.heroList_php = [];
             this.divObj = $("#ajaxError");
+            this.userInfo = {};
+            this.diaLogObj = $("#dialog");
         }
-        getHeroJson()
+        triggerAjax(config)
         {
             let _this = this;
+            //config.data = config.data ? {}: config.data;
             $.ajax({
-                url : "/onRequest/public/spider/herolist.json",
-                type: "GET",
-                //dataType : "json",
-                before:function(xhr)
-                {
-                    _this.divObj.html('');
-                },
-                complete:function()
-                {
-
-                },
-                success:function(result)
-                {
-                    _this.heroList_json = result;
-                    /*_this.heroList_json.forEach(function(info,key,index){
-
-                    });*/
-                    console.log('_this.heroList ',_this.heroList );
-                    //let a = JSON.stringify(result);
-                },
-                error:function(xhr,status,error)
-                {
-                    _this.divObj.html(xhr.responseText);
-                }
-            });
-        }
-
-        getHeroList()
-        {
-            let _this = this;
-            $.ajax({
-                url : "/Pvp/getHeroesList",
-                type: "GET",
+                url : config.url,
+                type: config.type,
+                data: config.data,
                 dataType : "json",
                 before:function(xhr)
                 {
@@ -247,50 +298,122 @@
                 },
                 success:function(result)
                 {
-                    _this.heroList_php = result;
-                   // _this.showSth();
+                    if( typeof config.success === "function")
+                    {
+                        config.success(result);
+                    }
                 },
                 error:function(xhr,status,error)
                 {
                     _this.divObj.html(xhr.responseText);
+                    _this.showDialog();
                 }
             });
         }
-
-        showSth()
+        showDialog()
         {
-            let arr = [];
-            _this.heroList_json.forEach(function(currentItem, index, arr)
-            {
-                if(currentItem.pay_type === 10 )
-                {
-                    arr.push(currentItem);
-                }
-            })
-
+            this.diaLogObj.attr('class','dialog show');
         }
-
-        showHero_payType()
+        closeDialog()
+        {
+            this.diaLogObj.attr('class','dialog');
+        }
+        static getUserName()
+        {
+            return $("#userName").val();
+        }
+        static getPassword()
+        {
+            return $("#password").val();
+        }
+        register(me)
+        {
+            this.triggerAjax({
+                url :me.getAttribute('data-url'),
+                type: 'POST',
+                data :{
+                    userName:Test.getUserName(),
+                    password:Test.getPassword(),
+                },
+                success:function (result) {
+                    alert(result.msg);
+                }
+            });
+        }
+        isUnique(me)
+        {
+            this.triggerAjax({
+                url :me.getAttribute('data-url'),
+                type: 'POST',
+                data :{
+                    userName:Test.getUserName(),
+                },
+                success:function (result) {
+                    alert(result.msg);
+                }
+            });
+        }
+        login(me)
+        {
+            let _this = this;
+            this.triggerAjax({
+                url :me.getAttribute('data-url'),
+                type: 'POST',
+                data :{
+                    userName:Test.getUserName(),
+                    password:Test.getPassword(),
+                },
+                success:function (result) {
+                    alert(result.msg);
+                    _this.userInfo = result.data;
+                }
+            });
+        }
+        getUserInfo(me)
+        {
+            let _this = this;
+            this.triggerAjax({
+                url :me.getAttribute('data-url'),
+                type: 'POST',
+                data :{
+                    id:  _this.userInfo.id,
+                },
+                success:function (result) {
+                    alert(result.msg);
+                }
+            });
+        }
+        editUserInfo(me)
         {
 
         }
     }
      let obj = new Test();
     obj.init();
-    obj.getHeroList();
-    //obj.getHeroJson();
     $(document).ready(function(){
-        let a_arr = $("a.test");
+        let arr = $("a.test");
         //console.log('a_arr=',a_arr);
         let href = '', ctrl ='', method = '';
         let spanObj = null;
-        a_arr.each(function(index,currentItem){
+        arr.each(function(index,currentItem){
             //console.log('currentItem=',currentItem);
             spanObj = $(currentItem).prev();
             ctrl  = spanObj.children().eq(0).text();
             method  = spanObj.children().eq(1).text();
             href = `/${ctrl}/${method}`;
             $(currentItem).attr("href",href)
+        });
+        //
+        let userMod =  $("#user_mod");
+        arr = userMod.find("span.testUrl");
+        console.log('arr=',arr);
+        arr.each(function(index,currentItem){
+            spanObj = $(currentItem);
+            ctrl  = spanObj.children().eq(0).text();
+            method  = spanObj.children().eq(1).text();
+            href = `/${ctrl}/${method}`;
+            console.log("href=",href);
+            spanObj.parent().siblings("button").eq(index).attr('data-url',href);
         });
     });
 </script>
