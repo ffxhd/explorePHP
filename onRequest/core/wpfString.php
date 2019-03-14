@@ -33,7 +33,7 @@ class wpfString
 	{
 		return md5(uniqid(microtime(true),true));
 	}
-	
+
 	/**
 	 * 取得文件扩展名
 	 * @param string $filename
@@ -59,5 +59,3 @@ class wpfString
 	}
 
 }
-
-?>

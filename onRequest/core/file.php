@@ -1,6 +1,6 @@
-<?php 
+<?php
 namespace onRequsest\core;
-use onRequsest\core\wpfString;
+use onRequest\core\wpfString;
 class file
 {
 
@@ -36,9 +36,10 @@ class file
 			$size /= 1024;
 			$i ++;
 		}
-		return round ( $size, 2 ) . $arr [$i];
+		$lastSize = round ( $size, 2 ) . $arr [$i];
+		return floatval($lastSize);
 	}
-	
+
 	/**
 	 * 创建文件
 	 * @param string $filename
@@ -47,7 +48,7 @@ class file
 	public static function createFile($filename)
     {
 		//file/1.txt
-		
+
 		if (wpfString::checkFilename( basename($filename) ) )
 		{
 			//检测当前目录下是否存在同名文件
@@ -72,7 +73,7 @@ class file
 			return "非法文件名";
 		}
 	}
-	
+
 	/**
 	 * 重命名文件
 	 * @param string $oldname
@@ -82,7 +83,7 @@ class file
 	public static function renameFile($oldname,$newname){
 		//	echo $oldname,$newname;
 		//验证文件名是否合法
-		if(string::checkFilename($newname)){
+		if(wpfString::checkFilename($newname)){
 			//检测当前目录下是否存在同名文件
 			$path=dirname($oldname);
 			if(!file_exists($path."/".$newname)){
@@ -98,9 +99,9 @@ class file
 		}else{
 			return "非法文件名";
 		}
-	
+
 	}
-	
+
 	/**
 	 * 删除文件
 	 * @param string $filename
@@ -114,7 +115,7 @@ class file
 		}
 		return $mes;
 	}
-	
+
 	/**
 	 * 下载文件操作
 	 * @param string $filename
@@ -124,7 +125,7 @@ class file
 		header("content-length:".filesize($filename));
 		readfile($filename);
 	}
-	
+
 	/**
 	 * 复制文件
 	 * @param string $filename
@@ -147,7 +148,7 @@ class file
 		}
 		return $mes;
 	}
-	
+
 	public static function cutFile($filename,$dstname){
 		if(file_exists($dstname)){
 			if(!file_exists($dstname."/".basename($filename))){
@@ -164,7 +165,7 @@ class file
 		}
 		return $mes;
 	}
-	
+
 	/**
 	 * 上传文件
 	 * @param array $fileInfo
@@ -180,7 +181,7 @@ class file
 			if(is_uploaded_file($fileInfo['tmp_name'])){
 				//上传文件的文件名，只允许上传jpeg|jpg、png、gif、txt的文件
 				//$allowExt=array("gif","jpeg","jpg","png","txt");
-				$ext=getExt($fileInfo['name']);
+				$ext=wpfString::getExt($fileInfo['name']);
 				$uniqid=getUniqidName();
 				$destination=$path."/".pathinfo($fileInfo['name'],PATHINFO_FILENAME)."_".$uniqid.".".$ext;
 				if(in_array($ext,$allowExt)){
@@ -215,11 +216,8 @@ class file
 					break;
 			}
 		}
-	
 		return $mes;
-	
 	}
-	
 }
 
 

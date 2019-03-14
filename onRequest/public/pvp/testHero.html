@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>测试英雄</title>
-    <script src="../js/library/jquery-3.3.1.min.js"></script>
     <style>
         .test{
             margin-left: 2%;
@@ -32,10 +31,15 @@
             margin-right: 5%;
         }
     </style>
+    <script src="../js/library/jquery-3.3.1.min.js"></script>
+    <script src="../js/util/file.js"></script>
 </head>
 <body style="font-size: 20px">
 <!--<p>选项卡  /spider/getPvpTabs</p>-->
 <!--<img src="/onRequest/public/images/pvp/tabs.jeg"/ >-->
+<h3>header头务必设置x-requested-with（不区分大小写，推荐X-Requested-With），
+    值为XMLHttpRequest（固定值，区分大小写），否则返回的数据不是json格式
+</h3>
 <p>
     获取 英雄单选框数据
     <span class="testUrl">
@@ -214,21 +218,114 @@
 </pre>
 <hr/>
 <div id="user_mod">
+    <table cellpadding="10" cellspacing="0" border="1">
+        <caption>返回的数据</caption>
+        <thead>
+        <tr>
+            <th>参数</th>
+            <th>含义</th>
+            <th>说明</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>errorCode</td>
+            <td>错误码</td>
+            <td>为0时，为欢喜的结局</td>
+        </tr>
+        <tr>
+            <td>msg</td>
+            <td>提示信息</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>data</td>
+            <td>数据</td>
+            <td>仅在errorCode=0时，才不为空</td>
+        </tr>
+        </tbody>
+    </table>
     <p>注册--POST--
         <span class="testUrl">
             /<span class="controller">user</span>/<span>register</span>
         </span>
     </p>
+    <table cellpadding="10" cellspacing="0" border="1">
+        <thead>
+        <tr>
+            <th>参数</th>
+            <th>是否必需</th>
+            <th>参数名</th>
+            <th>类型</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>用户名</td>
+            <td>必需</td>
+            <td>userName</td>
+            <td>String</td>
+        </tr>
+        <tr>
+            <td>密码</td>
+            <td>必需</td>
+            <td>password</td>
+            <td>String</td>
+        </tr>
+        </tbody>
+    </table>
     <p>用户名是否唯一--POST--
         <span class="testUrl">
             /<span class="controller">user</span>/<span>isUniqueUserName</span>
         </span>
     </p>
+    <table cellpadding="10" cellspacing="0" border="1">
+        <thead>
+        <tr>
+            <th>参数</th>
+            <th>是否必需</th>
+            <th>参数名</th>
+            <th>类型</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>用户名</td>
+            <td>必需</td>
+            <td>userName</td>
+            <td>String</td>
+        </tr>
+        </tbody>
+    </table>
     <p>登录--POST--
         <span class="testUrl">
             /<span class="controller">user</span>/<span>login</span>
         </span>
     </p>
+    <table cellpadding="10" cellspacing="0" border="1">
+        <thead>
+        <tr>
+            <th>参数</th>
+            <th>是否必需</th>
+            <th>参数名</th>
+            <th>类型</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>用户名</td>
+            <td>必需</td>
+            <td>userName</td>
+            <td>String</td>
+        </tr>
+        <tr>
+            <td>密码</td>
+            <td>必需</td>
+            <td>password</td>
+            <td>String</td>
+        </tr>
+        </tbody>
+    </table>
     <label for="userName">用户名</label><input type="text" id="userName"/>
     <label for="password">密码</label><input type="text" id="password"/>
     <button type="button" onclick="obj.register(this)" data-url="">注册</button>
@@ -252,17 +349,39 @@
             /<span class="controller">user</span>/<span>uploadAvatar</span>
         </span>
     </p>
-    <label for="avatar">上传头像</label><input type="file" id="avatar"/>
-    <button type="button" onclick="obj.uploadAvatar(this)" data-url="">上传头像</button>
+    <table cellpadding="10" cellspacing="0" border="1">
+        <thead>
+        <tr>
+            <th>参数</th>
+            <th>是否必需</th>
+            <th>参数名</th>
+            <th>类型</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>服务端返回的头像图片的名称</td>
+            <td>必需</td>
+            <td>avatar</td>
+            <td>String</td>
+        </tr>
+        </tbody>
+    </table>
+    <form action="/user/uploadAvatar" method="post" enctype="multipart/form-data" style="display: inline-block">
+        <label for="avatar">上传头像</label><input type="file" id="avatar" name="avatar"/>
+        <input type="submit" value="提交表单">
+    </form>
+    <button type="button" onclick="obj.uploadAvatar(this)" data-url="">ajax上传头像</button>
     <hr/>
 
     <p>
         修改用户资料
         <span class="testUrl">
-            /<span class="controller">user</span>/<span>editUserInfo</span>
+            /<span class="controller">user</span>/<span>modifyUserInfo</span>
         </span>
     </p>
-    <button type="button" onclick="obj.editUserInfo(this)" data-url="">修改用户资料</button>
+    <label for="avatarImg">头像</label><input type="image" value="" id="avatarImg" alt="" src=""/>
+    <button type="button" onclick="obj.modifyUserInfo(this)" data-url="">修改用户资料</button>
     <hr/>
 </div>
 
@@ -383,9 +502,56 @@
                 }
             });
         }
-        editUserInfo(me)
+        uploadAvatar(me)
         {
-
+            let _this = this;
+            ajaxUploadFile({
+                inputObj: document.getElementById("avatar"),
+                inputName:'avatar',
+                data :{
+                    hello:'world'
+                },
+                url:me.getAttribute('data-url'),
+                uploadingProgressFunc: function(percentComplete) {},
+                handling:function(result){},
+                success:function(apiData)
+                {
+                    console.log('success-apiData',apiData);
+                    if( apiData.errorCode > 0)
+                    {
+                        alert(apiData.msg);
+                        return;
+                    }
+                    let data = apiData.data;
+                    if( data.successFiles )
+                    {
+                        let img = data.successFiles[0];
+                        let obj = $("#avatarImg");
+                        obj.attr('src', data.path + img);
+                        obj.val(img);
+                    }
+                },
+                error:function(response)
+                {
+                    _this.divObj.html(response);
+                    _this.showDialog();
+                },
+            });
+        }
+        modifyUserInfo(me)
+        {
+            let _this = this;
+            this.triggerAjax({
+                url :me.getAttribute('data-url'),
+                type: 'POST',
+                data :{
+                    avatar:$('#avatarImg').val(),
+                },
+                success:function (result) {
+                    alert(result.msg);
+                    _this.userInfo = result.data;
+                }
+            });
         }
     }
      let obj = new Test();

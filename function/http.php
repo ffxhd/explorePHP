@@ -22,10 +22,11 @@ function startSession()
 
 function isAjaxOrNot($arr)
 {
-    $v = getItemFromArray($arr,'x-requested-with',null);
+    $v = getItemFromArray($arr,'x-requested-with',null);//推荐
     if( null === $v)
     {
-        $v = getItemFromArray($_SERVER,'HTTP_X_REQUESTED_WITH');
+        //HTTP_X_REQUESTED_WITH
+        $v = getItemFromArray($_SERVER,'http_x_requested_with','');
     }
     $_SERVER['IS_AJAX'] = 'XMLHttpRequest' === $v;
 }

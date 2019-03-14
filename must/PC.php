@@ -4,6 +4,7 @@ class PC{
 	public  static $controller;
 	public  static $method;
 	private static $config;
+	public static $response;
 
     private static function  init_controller_and_method()
     {
@@ -44,4 +45,11 @@ class PC{
 		DB::initial_db_config($config['db_config']);
 		self::init_controller_and_method();
 	}
+
+	public static function outputResponse($str)
+    {
+        self::$response->status(200);
+        self::$response->write($str);
+    }
+
 }

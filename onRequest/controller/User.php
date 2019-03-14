@@ -7,10 +7,14 @@
  */
 
 namespace onRequest\controller;
-
 use must\DB;
+use  \onRequest\core\upload;
+use  \onRequest\core\dir;
+use \must\PC;
 class User
 {
+    public static $avatarTempDir = 'temp_uploads';
+    public static $avatarFormalDir = '/uploads';
     public function  login()
     {
         $userName = $this->getUserNameFromSubmit();
@@ -59,12 +63,93 @@ from `user` where `user_name` = '{$userName}'";
             return  outputApiData($data);
         }
         $userId = $_SESSION['userInfo']['id'];
-        $sql = "select `user_name`,`avatar`,`register_time` 
+        $formalDir = self::$avatarFormalDir;
+        $avatarField = "concat('onRequest/public',`avatar`) as `avatar`";
+        $sql = "select `user_name`,{$avatarField},`register_time` 
 from `user` where `id` = {$userId}";
         $info = DB::findOne($sql);
         $isSuccess = false === empty($info) ;
         $resMsg = true === $isSuccess ? '成功':'失败';
         $data = creatApiData(0,"获取用户信息{$resMsg}", $info);
+        outputApiData($data);
+    }
+
+    public function uploadAvatar()
+    {
+        /*say('$_FILES[\'avatar\']',$_FILES['avatar']);
+        return;*/
+        /*go(function(){
+            echo '正在处理..';
+            sleep(2);
+            echo '正在处理2..';
+            sleep(2);
+            echo '正在处理3..';
+        });*/
+        /*PC::outputResponse('正在处理..') ;
+        sleep(5);
+        PC::outputResponse('正在处理2..') ;
+        sleep(5);
+        PC::outputResponse('正在处理3..') ;
+        return;*/
+        //say('server',$_SERVER);
+        if( false === self::isHaveLogin())
+        {
+            $data = creatApiData(1,"未登录...");
+            return  outputApiData($data);
+        }
+        $files = getItemFromArray($_FILES,'avatar',[]);
+        if( true === empty($files))
+        {
+            $data = creatApiData(1,'没有上传文件');
+            return outputApiData($data);
+        }
+        $path = OnRequestPath.'/public/'.self::$avatarTempDir;
+        if( false === is_dir($path))
+        {
+            dir::createFolder($path);
+        }
+        $uploadedFiles = upload::uploadFile($files,$path);
+        foreach ($uploadedFiles as $seq => $file)
+        {
+            $uploadedFiles[$seq] = $file;
+        }
+        $noticeArray = upload::$noticeArray;
+        $apiData = [
+            'path'=>'/onRequest/public/'.self::$avatarTempDir.'/',
+            'successFiles' => $uploadedFiles,
+            'noticeArr' => $noticeArray
+        ];
+        $data = creatApiData(0,'上传头像成功',$apiData);
+        outputApiData($data);
+    }
+
+    public function modifyUserInfo()
+    {
+        if( false === self::isHaveLogin())
+        {
+            $data = creatApiData(1,"未登录...");
+            return  outputApiData($data);
+        }
+        $userId = $_SESSION['userInfo']['id'];
+        $avatar = getItemFromArray($_POST,'avatar','');
+        $avatar = addSlashesOrNot($avatar);
+        $formalDir = self::$avatarFormalDir;
+        $avatarForDb = "{$formalDir}/{$avatar}";
+        $arr = [
+            'avatar'=>$avatarForDb,
+        ];
+        $where = "`id`={$userId}";
+        $result = DB::update('user',$arr,$where);
+        $isSuccess = $result > 0 ;
+        if( true === $isSuccess)//移动头像图片到正式的目录
+        {
+            $tempDir = self::$avatarTempDir;
+            rename(OnRequestPath."/public/{$tempDir}/{$avatar}",
+                OnRequestPath."/public/{$avatarForDb}");
+        }
+        $resMsg = true === $isSuccess ? '成功':'失败';
+        $errorCode = true === $isSuccess ? 0 : 1000;
+        $data = creatApiData($errorCode,'修改资料'.$resMsg);
         outputApiData($data);
     }
 

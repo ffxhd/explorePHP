@@ -1,7 +1,5 @@
 <?php
-//require 'string.func.php';
 namespace onRequest\core;
-use onRequest\core\wpfString;
 class upload
 {
 	/**构建文件上传信息
@@ -16,6 +14,25 @@ class upload
 		}//'没有文件上传,故没有文件信息'
 		$i=0;
 		$files = array();
+		//如果是单文件
+        $fileInfo_0 = getItemFromArray($FILES,0,null);
+        if( $fileInfo_0 === null)
+        {
+            $files[] = $FILES;
+            return $files;
+        }
+        //
+        foreach ($FILES as $key => $Files)
+        {
+            $files[$i]['name'] = $Files['name'];
+            $files[$i]['size']= $Files['size'];
+            $files[$i]['tmp_name']=$Files['tmp_name'];
+            $files[$i]['error']=$Files['error'];
+            $files[$i]['type']=$Files['type'];
+            $i++;
+        }
+        return $files;
+        //旧代码
 		foreach($FILES as $Files)//$_FILES三维数组 as $Files二维数组
 		{
 			if(is_string($Files['name']))//如果是单文件
@@ -61,6 +78,7 @@ class upload
 		}
 		$i = 0;
 		$files = self::buildInfo( $FILES );
+		//say('处理后的文件信息：',$files);
 		if( !( $files && is_array( $files ) ) )
 		{
 			return '没有文件信息数组';

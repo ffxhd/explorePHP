@@ -7,6 +7,7 @@
  */
 namespace serverCallBack;
 use onRequest\core\session\SessionFactory;
+use \must\PC;
 /** 发起http请求 $fd = 1， 服务端认为请求结束后，刷新，再次发起http请求$fd = 2,
  （一个浏览器，同一个窗口）
  * Class HttpServerCallback
@@ -79,6 +80,9 @@ class HttpServer
             //为了可以半路停下来
             $_SERVER['swooleResponse'] = $response;
             //
+            /*say(' $request', $request);
+            say(' $request-rawContent', $request->rawContent());
+            say(' $request-getData', $request->getData());*/
             isAjaxOrNot( $request->header);
             /*根据cookie，到session池中取出数据，赋值给$_SESSION，
             如果cookie中的PHPSESSID为空，需要生成唯一的sessionId
@@ -87,7 +91,8 @@ class HttpServer
             $session_id = SessionFactory::initialSessionFromPool($request->fd,$response,$requestTime);
             //业务操作
             global $config;
-            \must\PC::run($config);
+            PC::$response = $response;
+            PC::run($config);
             //将$_SESSION弄到session池中
             SessionFactory::setSessionToPool($session_id, $requestTime);
         }
@@ -161,7 +166,7 @@ class HttpServer
        {
            return false;
        }
-        $dirToListen = OnRequestDir;
+        $dirToListen = OnRequestPath;
         $monitor = new \must\Monitor($dirToListen);
         $monitor->watchMainDir();
         $monitor->recursiveWatch($dirToListen);
@@ -178,6 +183,7 @@ class HttpServer
             $monitor->watchSthHappen(function() use($server){
                 echo '重新载入代码--';
                 $server->reload();
+                exec("espeak 'reload codes'");
             });
         });
         return true;

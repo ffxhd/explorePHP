@@ -30,7 +30,7 @@ exit;*/
  */
 $server = new  \Swoole\Http\Server($config['host'], 9501);
 $server->set([
-    'document_root' => OnRequestDir.'/public',
+    'document_root' => OnRequestPath.'/public',
     'enable_static_handler' => true,
 ]);
 //
