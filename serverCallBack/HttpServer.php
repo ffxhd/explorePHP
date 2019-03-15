@@ -103,8 +103,8 @@ class HttpServer
             $errMsg = $e->getMessage();
             $errTrace = $e->getTrace();
             $errCode = $e->getCode();
-            /*$previous = $e->getPrevious();
-            say($previous,'$previous');*/
+            //$previous = $e->getPrevious();
+            //say($previous,'$previous');
             throw_phpError($errCode,$errMsg, $errFile,$errLine,$errTrace);
         }
         $html = ob_get_clean();
