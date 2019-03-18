@@ -20,6 +20,16 @@ function startSession()
     }
 }
 
+function getWashedData($source,$field,$default='')
+{
+    $value = getItemFromArray($source,$field,$default);
+    if( true === is_string($value))
+    {
+        $value = trim($value);
+    }
+    return addSlashesOrNot($value);
+}
+
 function isAjaxOrNot($arr)
 {
     $v = getItemFromArray($arr,'x-requested-with',null);//推荐

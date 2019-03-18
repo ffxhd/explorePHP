@@ -89,6 +89,7 @@ class HttpServer
             便于业务操作*/
             $requestTime = $_SERVER['REQUEST_TIME'] = $_SERVER['request_time'];
             $session_id = SessionFactory::initialSessionFromPool($request->fd,$response,$requestTime);
+            $_SERVER['session_id'] = $session_id;
             //业务操作
             global $config;
             PC::$response = $response;

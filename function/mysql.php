@@ -85,8 +85,21 @@ function joinFieldsToSelect($fields)
     $s = array();
     foreach($fieldsArr as $key =>$value)
     {
-        $needField = true === is_integer($key) ? $value :  $key;
-        $s[] = "`{$needField}`";
+        if(  true === is_integer($key) )
+        {
+            $s[] = "`{$value}`" ;
+        }
+        else
+        {
+            if( $value === 'i' || $value === 's')
+            {
+                $s[] = "`{$key}`" ;
+            }
+            else
+            {
+                $s[] = "`{$key}` as `{$value}`";
+            }
+        }
     }
     $s = implode(',',$s);
     return $s;

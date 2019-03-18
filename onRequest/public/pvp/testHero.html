@@ -124,6 +124,13 @@
         </pre>
         </td>
     </tr>
+    <tr>
+        <td>英雄名称关键字</td>
+        <td>非必须</td>
+        <td>hero_name</td>
+        <td>string</td>
+        <td>优先级最高</td>
+    </tr>
     </tbody>
 </table>
 <table cellpadding="10" cellspacing="0" border="1">
@@ -257,35 +264,47 @@
         <td>Integer</td>
         <td>每页显示pageSize条数据，默认10条</td>
     </tr>
-    <!--<tr>
-        <td>新手推荐? 本周免费?</td>
+    <tr>
+        <td>常规模式? 边境突围模式?</td>
         <td>非必需</td>
-        <td>complex</td>
-        <td>String</td>
+        <td>parent_type</td>
+        <td>int</td>
         <td>
-            <p>【新手推荐】的话，参数值必须是<br/>novice_recommendation；</p>
-            <p>【本周免费】的话，参数值随意；</p>
-            <p style="color:red">不要与hero_type一起传</p>
+            <p>【常规模式】的话，参数值必须是0</p>
+            <p>【边境突围模式】的话，参数值推荐为1；</p>
         </td>
     </tr>
     <tr>
-        <td>英雄类型</td>
+        <td>子类型</td>
         <td>非必需</td>
-        <td>hero_type</td>
-        <td>String</td>
+        <td>type</td>
+        <td>int</td>
         <td>
             值和解释如下
+            <table cellpadding="10" cellspacing="0" border="1">
+                <tr>
+                    <th>常规模式</th>
+                    <td> 0全部</td>
+                    <td> 1攻击</td>
+                    <td>2法术</td>
+                    <td>3防御</td>
+                    <td>4移动</td>
+                    <td>5打野</td>
+                    <td>7辅助</td>
+                </tr>
+                <tr style="background-color:skyblue">
+                    <th>边境突围模式</th>
+                    <td>0全部</td>
+                    <td>1装备</td>
+                    <td>2道具</td>
+                    <td>3额外技能</td>
+                </tr>
+            </table>
             <pre>
-        'all'=> 0,//全部
-        'tank'=> 3,//坦克
-        'warrior'=>1,//战士
-        'assassin'=> 4,//刺客
-        'mage'=>2,//法师
-        'shooter'=> 5,//射手
-        'aid'=>6,//辅助
+
         </pre>
         </td>
-    </tr>-->
+    </tr>
     </tbody>
 </table>
 <table cellpadding="10" cellspacing="0" border="1">
@@ -328,7 +347,14 @@
     </tbody>
 </table>
 <p>返回数据：</p>
-<pre>
+<table cellpadding="0" cellspacing="0" border="1">
+    <tr>
+        <th>常规模式</th>
+        <th>边境突围模式</th>
+    </tr>
+    <tr>
+        <td>
+            <pre>
 {
     "errorCode": 0,
     "msg": "获取列表数据成功",
@@ -359,11 +385,49 @@
         ],
         "totalPage": 48,
         "totalRows": 95,
-        "sqlCount": "select count(`id`) as `totalRows` from `item_json` ",
-        "sql": "select `des1`,`item_id`,`item_name`,`item_type`,`price`,`total_price`,concat('https://game.gtimg.cn/images/yxzj/img201606/itemimg/',`item_id`,'.jpg') as `item_img` from `item_json`   limit 0,2"
     }
 }
 </pre>
+        </td>
+        <td>
+            <pre>
+                {
+    "errorCode": 0,
+    "msg": "获取列表数据成功",
+    "data": {
+        "list": [
+            {
+                "des1": [
+                    "+250攻击"
+                ],
+                "des2": "唯一被动:【破军】:目标生命低于50%时伤害提高30%",
+                "item_id": "2000",
+                "item_level": "4级",
+                "item_name": "砂之破军",
+                "item_type": "1",
+                "item_img": "https://game.gtimg.cn/images/yxzj/img201606/itemimg/2000.jpg"
+            },
+            {
+                "des1": [
+                    "+400法攻",
+                    "+600最大生命"
+                ],
+                "des2": "唯一被动:【刻印】：增加1400点最大生命值",
+                "item_id": "2001",
+                "item_level": "4级",
+                "item_name": "贤者之书",
+                "item_type": "1",
+                "item_img": "https://game.gtimg.cn/images/yxzj/img201606/itemimg/2001.jpg"
+            }
+        ],
+        "totalPage": 6,
+        "totalRows": 11,
+    }
+}
+            </pre>
+        </td>
+    </tr>
+</table>
 <hr/>
 <p>召唤师列表
     <span class="testUrl">
@@ -418,6 +482,11 @@
             <td>data</td>
             <td>数据</td>
             <td>仅在errorCode=0时，才不为空</td>
+        </tr>
+        <tr>
+            <td>session_id</td>
+            <td>会话凭证</td>
+            <td>只有登录接口提供此项，登录成功时提供</td>
         </tr>
         </tbody>
     </table>
@@ -557,6 +626,8 @@
         </span>
     </p>
     <label for="avatarImg">头像</label><input type="image" value="" id="avatarImg" alt="" src=""/>
+    <label for="age">年纪</label><input type="number" id="age"  value="28"/>
+    <label for="sex">性别</label><input type="text"  id="sex" value="男" />
     <button type="button" onclick="obj.modifyUserInfo(this)" data-url="">修改用户资料</button>
     <hr/>
 </div>
@@ -733,6 +804,8 @@
                 type: 'POST',
                 data :{
                     avatar:$('#avatarImg').val(),
+                    age:$('#age').val(),
+                    sex:$('#sex').val(),
                 },
                 success:function (result) {
                     alert(result.msg);

@@ -46,27 +46,12 @@ class Pvp
 
     protected function heroesWhere($rawSubmit)
     {
-        /*$type = getItemFromArray($rawSubmit,'complex',null);
-        if( $type !== null )
+        $name = getWashedData($rawSubmit,'hero_name','');
+        if($name !== '')
         {
-            $type = $type === 'novice_recommendation' ? '11' : '10';
-           return "`pay_type` = {$type}";
-        }*/
-        /*$heroTypeArr = [
-            'all'=> 0,//全部
-            'tank'=> 3,//坦克
-            'warrior'=>1,//战士
-            'assassin'=> 4,//刺客
-            'mage'=>2,//法师
-            'shooter'=> 5,//射手
-            'aid'=>6,//辅助
-        ];*/
+            return "`cname` like '%{$name}%'";
+        }
         $type = getItemFromArray($rawSubmit,'hero_type',null);
-        /*if( $type !== null )
-        {
-            $type = getItemFromArray($heroTypeArr,$type,0);
-            return " `hero_type` = {$type} or (`hero_type2` = {$type}  and `pay_type` is null)";
-        }*/
         $type = intval($type);
         switch (true)
         {
@@ -122,41 +107,41 @@ class Pvp
 
     //===============================================================
 
-    protected function itemWhere($rawSubmit)
+    protected function itemWhere($rawSubmit,$isRegularMode)
     {
-        $type = getItemFromArray($rawSubmit,'complex',null);
-        if( $type !== null )
+        $nameField = true === $isRegularMode ? 'item_name': 'itemnamezwm_cd';
+        $name = getWashedData($rawSubmit,'item_name','');
+        if($name !== '')
         {
-            $type = $type === 'novice_recommendation' ? '11' : '10';
-            return "`pay_type` = {$type}";
+            return "`{$nameField}` like '%{$name}%'";
         }
-        $heroTypeArr = [
-            'all'=> 0,//全部
-            'tank'=> 3,//坦克
-            'warrior'=>1,//战士
-            'assassin'=> 4,//刺客
-            'mage'=>2,//法师
-            'shooter'=> 5,//射手
-            'aid'=>6,//辅助
-        ];
-        $type = getItemFromArray($rawSubmit,'hero_type',null);
-        if( $type !== null )
-        {
-            $type = getItemFromArray($heroTypeArr,$type,0);
-            return "`hero_type2` = {$type} OR `hero_type` = {$type} ";
-        }
-        return '';
+        //
+        $type = getItemFromArray($rawSubmit,'type',0);
+        $type = intval($type);
+        $typeField = true === $isRegularMode ? 'item_type':'itemtypezbfl_30';
+        return $type === 0 ? '': "`{$typeField}` = {$type}";
     }
 
     public function getItemList()
     {
-        $where = $this->itemWhere($_REQUEST);
+        $obj = new  PvpSpider();
         $p = getItemFromArray($_GET,'p',1);
         $p = intval($p);
         $pageSize = getItemFromArray($_GET,'pageSize',10);
         $pageSize = intval($pageSize);
-        $obj = new  PvpSpider();
-        $apiData = $obj->getItemList($where,$p,$pageSize);
+        //
+        $parentType = getItemFromArray($_GET,'parent_type',0);
+        $parentType = intval($parentType);
+        $isRegularMode = $parentType === 0;
+        $where = $this->itemWhere($_REQUEST,$isRegularMode);
+        if(true === $isRegularMode )
+        {
+            $apiData = $obj->getItemList($where,$p,$pageSize);
+        }
+        else
+        {
+            $apiData = $obj->getBorderBreakOutItemList($where,$p,$pageSize);
+        }
         $isSuccess = false === empty($apiData['list']) ;
         $resMsg = true === $isSuccess ? '成功':'失败';
         $data = creatApiData(0,"获取列表数据{$resMsg}", $apiData);

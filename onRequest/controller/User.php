@@ -44,6 +44,10 @@ from `user` where `user_name` = '{$userName}'";
         unset($info[$pswField]);
         $_SESSION['userInfo'] = $info;
         $data = creatApiData(0,"登录成功", $info);
+        $extraData = [
+            'session_id'=>$_SERVER['session_id']
+        ];
+        $data = array_merge($data,$extraData);
         outputApiData($data);
     }
 
@@ -65,7 +69,7 @@ from `user` where `user_name` = '{$userName}'";
         $userId = $_SESSION['userInfo']['id'];
         $formalDir = self::$avatarFormalDir;
         $avatarField = "concat('onRequest/public',`avatar`) as `avatar`";
-        $sql = "select `user_name`,{$avatarField},`register_time` 
+        $sql = "select `user_name`,{$avatarField},`register_time`,`age`,`sex` 
 from `user` where `id` = {$userId}";
         $info = DB::findOne($sql);
         $isSuccess = false === empty($info) ;
@@ -131,21 +135,34 @@ from `user` where `id` = {$userId}";
             return  outputApiData($data);
         }
         $userId = $_SESSION['userInfo']['id'];
-        $avatar = getItemFromArray($_POST,'avatar','');
-        $avatar = addSlashesOrNot($avatar);
+        $avatar = getWashedData($_POST,'avatar','');
+        $age = getWashedData($_POST,'age',null);
+        $sex = getWashedData($_POST,'sex',null);
         $formalDir = self::$avatarFormalDir;
         $avatarForDb = "{$formalDir}/{$avatar}";
         $arr = [
-            'avatar'=>$avatarForDb,
+            'age'=>$age,
+            'sex'=>$sex,
         ];
+        $isExistAvatar = $avatar !== '';
+        if( true === $isExistAvatar)
+        {
+            $arr['avatar'] = $avatarForDb;
+        }
         $where = "`id`={$userId}";
         $result = DB::update('user',$arr,$where);
         $isSuccess = $result > 0 ;
         if( true === $isSuccess)//移动头像图片到正式的目录
         {
-            $tempDir = self::$avatarTempDir;
-            rename(OnRequestPath."/public/{$tempDir}/{$avatar}",
-                OnRequestPath."/public/{$avatarForDb}");
+            if( true === $isExistAvatar)
+            {
+                $tempDir = self::$avatarTempDir;
+                $file = OnRequestPath."/public/{$tempDir}/{$avatar}";
+                if( true === file_exists($file))
+                {
+                    rename($file, OnRequestPath."/public/{$avatarForDb}");
+                }
+            }
         }
         $resMsg = true === $isSuccess ? '成功':'失败';
         $errorCode = true === $isSuccess ? 0 : 1000;

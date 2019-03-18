@@ -311,11 +311,11 @@ class PvpSpider
         }
     }
 
-    //=======================================================================================
+    //===========局内道具====常规模式===================================================
 
     public function getItemList($where,$p,$pageSize):array
     {
-        static $i = 0;
+        $i = 0;
         $descriptionField = 'des1';
         $fieldsArr = [
             $descriptionField => 's',
@@ -335,7 +335,8 @@ class PvpSpider
         $offset = page::getOffsetByPage($p,$totalPage,$pageSize);
         //
         //
-        $fields = joinFieldsToSelect($fieldsArr);
+        $fieldsToSelect = array_keys($fieldsArr);
+        $fields = joinFieldsToSelect($fieldsToSelect);
 
         ////game.gtimg.cn/images/yxzj/img201606/itemimg/1314.jpg
         $imgField = "concat('https://game.gtimg.cn/images/yxzj/img201606/itemimg/'".
@@ -425,6 +426,143 @@ class PvpSpider
     {
         $path = $this->jsonFilePath;
         $file = $path.'/download_itemList.json';
+        if(false === file_exists($file))
+        {
+            touch($file);
+        }
+        return file_put_contents($file,$str);
+    }
+
+//============局内道具====边境突围模式=================================================
+
+    public function getBorderBreakOutItemList($where,$p,$pageSize):array
+    {
+        $i = 0;
+        $descriptionField = 'des1zbsx_a6';
+        $itemIdField = 'itemidzbid_4a';
+        $des2Field = 'des2fszx_cc';
+        $itemLevelField = 'itemlvzbdj_96';
+        $itemNameField = 'itemnamezwm_cd';
+        $ItemTypeField = 'itemtypezbfl_30';
+        $fieldsArr = [
+            $descriptionField => 's',
+            $des2Field =>'s',
+            $itemIdField => 'i',
+            $itemLevelField =>'s',
+            $itemNameField => 's',
+            $ItemTypeField => 'i',
+            'zbid_7c' => 's',
+        ];
+        $fieldsAsArr = [
+            $descriptionField => 'des1',
+            $des2Field =>'des2',
+            $itemIdField => 'item_id',
+            $itemLevelField =>'item_level',
+            $itemNameField => 'item_name',
+            $ItemTypeField => 'item_type',
+        ];
+        $table = 'item_border_breakout';
+        //
+        $where = '' === $where ? '': "where {$where}";
+        $rowsField = 'totalRows';
+        $sqlCount = "select count(`id`) as `{$rowsField}` from `{$table}` {$where}";
+        $totalRows = DB::findResultFromTheInfo($sqlCount,$rowsField);
+        $totalPage = page::getTotalPage($totalRows,$pageSize);
+        $offset = page::getOffsetByPage($p,$totalPage,$pageSize);
+        //
+        //
+        $fields = joinFieldsToSelect($fieldsAsArr);
+
+        ////game.gtimg.cn/images/yxzj/img201606/itemimg/1314.jpg
+        $imgField = "concat('https://game.gtimg.cn/images/yxzj/img201606/itemimg/'".
+            ",`{$itemIdField}`,'.jpg') as `item_img`";
+        $sql = "select {$fields},{$imgField} from `{$table}` {$where}  limit {$offset},{$pageSize}";
+        $list = DB::findAll($sql);
+        if( false === empty($list) /*&& false === IS_LOCAL*/)
+        {
+            $descriptionField = $fieldsAsArr[$descriptionField];
+            $data = [
+                'list' => $this->washDesOfBorderBreakOutItemList($list,$descriptionField),
+//                'p' => $p,
+//                'pageSize' => $pageSize,
+                'totalPage' => $totalPage,
+                'totalRows' => intval($totalRows),
+            ];
+            if( true === IS_LOCAL)
+            {
+                $data['sqlCount'] = $sqlCount;
+                $data['sql'] = $sql;
+            }
+            return  $data;
+        }
+        $str = $this->grabItemBorderBreakOutJson();
+        $str = substr($str,0);//必须 加这一行代码
+        $list = json_decode($str,true);
+        //
+        if( false === is_array($list))
+        {
+            return [];
+        }
+        //
+        DB::resetTable($table);
+        $list = $list['bjtwzbsy_ba'];
+        $this->StuffedBorderBreakOutItemJSONIntoDB($list,$table,$fieldsArr);
+        $this->saveBorderBreakOutItemJsonToFile($str);
+        $i++;
+        return $i === 1 ? $this->getBorderBreakOutItemList($where,$p,$pageSize):[];
+    }
+
+    protected function washDesOfBorderBreakOutItemList($list,$descriptionField)
+    {
+        //<p>+10物理攻击<br>+8%物理吸血</p>
+        foreach($list as $seq => $item)
+        {
+            $description = $item[$descriptionField];
+            $description = trim($description);
+//            $description = ltrim($description,'<p>');
+//            $description = rtrim($description,'</p>');
+            $list[$seq][$descriptionField] = explode('<br>',$description);
+        }
+        return $list;
+    }
+
+    public function grabItemBorderBreakOutJson():string
+    {
+        $url = 'https://pvp.qq.com/zlkdatasys/data_zlk_bjtwitem.json';
+        $ql = QueryList::get($url);
+        return $ql->removeHead()->getHtml();
+    }
+
+    public function StuffedBorderBreakOutItemJSONIntoDB($list,$table,$fieldsArr)
+    {
+        $fields = joinFieldsToSelect($fieldsArr);
+        $L = count($fieldsArr);
+        $qArr =  array_fill(0, $L, '?');
+        $qStr = implode(',',$qArr);
+        $preSql="INSERT INTO `{$table}`({$fields}) VALUES({$qStr})";
+        $stmt = DB::getStmt($preSql);
+        $dbFieldsArr  = array_keys($fieldsArr);
+        $sArr = array_values($fieldsArr);
+        $sStr = implode('',$sArr);
+        $vToBind = array_fill(0, $L,'v');
+        $stmt->bind_param($sStr, $vToBind[0], $vToBind[1], $vToBind[2],$vToBind[3],
+            $vToBind[4], $vToBind[5],$vToBind[6]);
+        // 设置参数并执行
+        foreach ($list as $key => $item)
+        {
+            foreach ($vToBind as $seq => $value)
+            {
+                $field = $dbFieldsArr[$seq];
+                $vToBind[$seq] = getItemFromArray($item,$field,null);
+            }
+            $stmt->execute();
+        }
+    }
+
+    public function saveBorderBreakOutItemJsonToFile($str):int
+    {
+        $path = $this->jsonFilePath;
+        $file = $path.'/download_itemBorderBreakOutList.json';
         if(false === file_exists($file))
         {
             touch($file);
