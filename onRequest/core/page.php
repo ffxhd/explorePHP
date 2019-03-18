@@ -9,30 +9,48 @@ class page
 {
     /**根据页码，返回偏移量 ，便于取该页码的数据
      * @param integer $page 页码
-     * @param integer $totalRows 总记录数
+     * @param integer $totalPage 总页数
      * @param integer $pageSize  每页显示条数
      * @return integer
      */
-    public static function getOffsetByPage($page,$totalRows,$pageSize)
+    public static function getOffsetByPage($page,$totalPage,$pageSize)
     {
-        $totalPage=ceil($totalRows/$pageSize);//总页数
-        if($page<1||$page==null||!is_numeric($page))$page=1;
-        if($page>=$totalPage)$page=$totalPage;
-        $offset=($page-1)*$pageSize;//偏移量;
+        if( $totalPage === 0)
+        {
+            return 0;
+        }
+        if( $page < 1 || $page === null ||  false === is_numeric($page) )
+        {
+            $page = 1;
+        }
+        if($page >= $totalPage)
+        {
+            $page = $totalPage;
+        }
+        $offset = ( $page - 1 ) * $pageSize;//偏移量;
         //跳过前面$offset条记录,从第$offset+1条记录开始读取,读取$pageSize条记录
         return $offset;
     }
 
+    /**总页数
+     * @param int $totalRows
+     * @param  int $pageSize
+     * @return float
+     */
     public static function getTotalPage($totalRows,$pageSize)
     {
-        return  ceil($totalRows/$pageSize);//总页数
+        $totalRows = intval($totalRows);
+        return  $totalRows === 0 ? 0 : ceil($totalRows/$pageSize);//总页数
     }
 
     /**返回分页条，需配合page.css,page.js $url本身带参数
-     * @param number $totalRows数据总条数
-     * @param number $pageSize 每页显示条数
-     * @param number $showPage 显示几个页码
-     * @return string           页码条
+     * @param $page
+     * @param int $totalRows 数据总条数
+     * @param int $pageSize 每页显示条数
+     * @param int $showPage 显示几个页码
+     * @param null $url
+     * @param bool $needArray
+     * @return array|string 页码条
      */
     public static function getPageBanner($page,$totalRows,$pageSize,$showPage,$url=null,$needArray= false)
     {
@@ -159,4 +177,3 @@ class page
         </form> */
     }
 }
-?>

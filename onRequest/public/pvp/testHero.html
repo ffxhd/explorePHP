@@ -78,50 +78,121 @@
     </span>
     <a href="" target="_blank" class="test">测试</a>
 </p>
-参数：<br/>
-<ul>
-    <li>complex  新手推荐（参数值必须是novice_recommendation） /  本周免费</li>
-    <li>hero_type  值和解释如下
-        <pre>
-        'all'=> 0,//全部
-        'tank'=> 3,//坦克
-        'warrior'=>1,//战士
-        'assassin'=> 4,//刺客
-        'mage'=>2,//法师
-        'shooter'=> 5,//射手
-        'aid'=>6,//辅助
+<table cellpadding="10" cellspacing="0" border="1">
+    <caption>参数</caption>
+    <thead>
+    <tr>
+        <th>参数</th>
+        <th>是否必需</th>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>解释</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>页码</td>
+        <td>非必需</td>
+        <td>p</td>
+        <td>Integer</td>
+        <td>需要第p页的列表数据</td>
+    </tr>
+    <tr>
+        <td>每页条数</td>
+        <td>非必需</td>
+        <td>pageSize</td>
+        <td>Integer</td>
+        <td>每页显示pageSize条数据，默认10条</td>
+    </tr>
+    <tr>
+        <td>英雄类型</td>
+        <td>非必需</td>
+        <td>hero_type</td>
+        <td>int</td>
+        <td>
+            值和解释如下
+            <pre>
+        0,//全部
+        3,//坦克
+        1,//战士
+        4,//刺客
+        2,//法师
+        5,//射手
+        6,//辅助
+        7,//新手推荐
+        8,//本周免费
         </pre>
-    </li>
-</ul>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<table cellpadding="10" cellspacing="0" border="1">
+    <caption>返回的数据</caption>
+    <thead>
+    <tr>
+        <th>参数</th>
+        <th>含义</th>
+        <th>说明</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>errorCode</td>
+        <td>错误码</td>
+        <td>为0时，为欢喜的结局</td>
+    </tr>
+    <tr>
+        <td>msg</td>
+        <td>提示信息</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>data</td>
+        <td>数据</td>
+        <td>仅在errorCode=0时，才不为空
+            <table  cellpadding="10" cellspacing="0" border="1">
+                <tr>
+                    <td>list</td><td>列表数据</td>
+                </tr>
+                <tr>
+                    <td>totalPage</td><td>总页数</td>
+                </tr>
+                <tr>
+                    <td>totalRows</td><td>总共有totalRows条数据</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<br/>
 <p>返回数据：json格式的字符串</p>
 <pre>
-[
-    {
-        "id": "1",
-        "ename": "105",
-        "cname": "廉颇",
-        "title": "正义爆轰",
-        "new_type": "0",
-        "hero_type": "3",
-        "hero_type2": null,
-        "pay_type": null,
-        "skin_name": "正义爆轰|地狱岩魂",
-        "detail_href": "https://pvp.qq.com/web201605/herodetail/105.shtml",
-        "hero_avatar": "https://game.gtimg.cn/images/yxzj/img201606/heroimg/105/105.jpg"
-    },
-    {
-        "id": "2",
-        "ename": "106",
-        "cname": "小乔",
-        "title": "恋之微风",
-        "new_type": "0",
-        "hero_type": "2",
-        "hero_type2": null,
-        "pay_type": null,
-        "skin_name": "恋之微风|万圣前夜|天鹅之梦|纯白花嫁|缤纷独角兽",
-        "detail_href": "https://pvp.qq.com/web201605/herodetail/106.shtml",
-        "hero_avatar": "https://game.gtimg.cn/images/yxzj/img201606/heroimg/106/106.jpg"
-    },
+{
+    "errorCode": 0,
+    "msg": "获取英雄列表数据成功",
+    "data": {
+        "list": [
+            {
+                "ename": "105",
+                "cname": "廉颇",
+                "title": "正义爆轰",
+                "skin_name": "正义爆轰|地狱岩魂",
+                "hero_avatar": "https://game.gtimg.cn/images/yxzj/img201606/heroimg/105/105.jpg"
+            },
+            {
+                "ename": "106",
+                "cname": "小乔",
+                "title": "恋之微风",
+                "skin_name": "恋之微风|万圣前夜|天鹅之梦|纯白花嫁|缤纷独角兽",
+                "hero_avatar": "https://game.gtimg.cn/images/yxzj/img201606/heroimg/106/106.jpg"
+            }
+        ],
+        "totalPage": 46,
+        "totalRows": 91,
+    }
+}
 </pre>
 <hr/>
 <p>局内道具单选搜索框
@@ -160,33 +231,138 @@
     </span>
     <a href="" target="_blank" class="test">测试</a>
 </p>
+<table cellpadding="10" cellspacing="0" border="1">
+    <caption>参数</caption>
+    <thead>
+    <tr>
+        <th>参数</th>
+        <th>是否必需</th>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>解释</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>页码</td>
+        <td>非必需</td>
+        <td>p</td>
+        <td>Integer</td>
+        <td>需要第p页的列表数据</td>
+    </tr>
+    <tr>
+        <td>每页条数</td>
+        <td>非必需</td>
+        <td>pageSize</td>
+        <td>Integer</td>
+        <td>每页显示pageSize条数据，默认10条</td>
+    </tr>
+    <!--<tr>
+        <td>新手推荐? 本周免费?</td>
+        <td>非必需</td>
+        <td>complex</td>
+        <td>String</td>
+        <td>
+            <p>【新手推荐】的话，参数值必须是<br/>novice_recommendation；</p>
+            <p>【本周免费】的话，参数值随意；</p>
+            <p style="color:red">不要与hero_type一起传</p>
+        </td>
+    </tr>
+    <tr>
+        <td>英雄类型</td>
+        <td>非必需</td>
+        <td>hero_type</td>
+        <td>String</td>
+        <td>
+            值和解释如下
+            <pre>
+        'all'=> 0,//全部
+        'tank'=> 3,//坦克
+        'warrior'=>1,//战士
+        'assassin'=> 4,//刺客
+        'mage'=>2,//法师
+        'shooter'=> 5,//射手
+        'aid'=>6,//辅助
+        </pre>
+        </td>
+    </tr>-->
+    </tbody>
+</table>
+<table cellpadding="10" cellspacing="0" border="1">
+    <caption>返回的数据</caption>
+    <thead>
+    <tr>
+        <th>参数</th>
+        <th>含义</th>
+        <th>说明</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>errorCode</td>
+        <td>错误码</td>
+        <td>为0时，为欢喜的结局</td>
+    </tr>
+    <tr>
+        <td>msg</td>
+        <td>提示信息</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>data</td>
+        <td>数据</td>
+        <td>仅在errorCode=0时，才不为空
+            <table  cellpadding="10" cellspacing="0" border="1">
+                <tr>
+                    <td>list</td><td>列表数据</td>
+                </tr>
+                <tr>
+                    <td>totalPage</td><td>总页数</td>
+                </tr>
+                <tr>
+                    <td>totalRows</td><td>总共有totalRows条数据</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
 <p>返回数据：</p>
 <pre>
-[
-    {
-        "id": "1",
-        "des1": [
-            "+20物理攻击"
+{
+    "errorCode": 0,
+    "msg": "获取列表数据成功",
+    "data": {
+        "list": [
+            {
+                "des1": [
+                    "+20物理攻击"
+                ],
+                "item_id": "1111",
+                "item_name": "铁剑",
+                "item_type": "1",
+                "price": "150",
+                "total_price": "250",
+                "item_img": "https://game.gtimg.cn/images/yxzj/img201606/itemimg/1111.jpg"
+            },
+            {
+                "des1": [
+                    "+10%攻击速度 "
+                ],
+                "item_id": "1112",
+                "item_name": "匕首",
+                "item_type": "1",
+                "price": "174",
+                "total_price": "290",
+                "item_img": "https://game.gtimg.cn/images/yxzj/img201606/itemimg/1112.jpg"
+            }
         ],
-        "item_id": "1111",
-        "item_name": "铁剑",
-        "item_type": "1",
-        "price": "150",
-        "total_price": "250",
-        "item_img": "https://game.gtimg.cn/images/yxzj/img201606/itemimg/1111.jpg"
-    },
-    {
-        "id": "2",
-        "des1": [
-            "+10%攻击速度 "
-        ],
-        "item_id": "1112",
-        "item_name": "匕首",
-        "item_type": "1",
-        "price": "174",
-        "total_price": "290",
-        "item_img": "https://game.gtimg.cn/images/yxzj/img201606/itemimg/1112.jpg"
-    },
+        "totalPage": 48,
+        "totalRows": 95,
+        "sqlCount": "select count(`id`) as `totalRows` from `item_json` ",
+        "sql": "select `des1`,`item_id`,`item_name`,`item_type`,`price`,`total_price`,concat('https://game.gtimg.cn/images/yxzj/img201606/itemimg/',`item_id`,'.jpg') as `item_img` from `item_json`   limit 0,2"
+    }
+}
 </pre>
 <hr/>
 <p>召唤师列表

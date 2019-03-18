@@ -9,6 +9,7 @@
 namespace onRequest\spiderModel;
 use QL\QueryList;
 use must\DB;
+use onRequest\core\page;
 class PvpSpider
 {
     protected $urlBase = 'https://pvp.qq.com/web201605';
@@ -27,31 +28,54 @@ class PvpSpider
             ->encoding('utf-8','gbk');
     }
 
-    public function getHeroesList($where):array
+    protected function getHeroListByPageCode()
     {
+
+    }
+
+    public function getHeroesList($where,$p,$pageSize):array
+    {
+        static $i = 0;
         $fieldsArr = [
             'ename' => 'i',//i
             'cname' => 's',
             'title' => 's',
-            'new_type' => 'i',//i
-            'hero_type' => 'i',
-            'hero_type2' => 'i',
-            'pay_type' => 'i',//i
             'skin_name' => 's'
         ];
         $table = 'hero_json';
         //
-        $fields = joinFieldsToSelect($fieldsArr);
         $where = '' === $where ? '': "where {$where}";
-        $hrefField = "concat('{$this->urlBase}/herodetail/',`ename`,'.shtml') as `detail_href`";
+        $rowsField = 'totalRows';
+        $sqlCount = "select count(`id`) as `{$rowsField}` from `{$table}` {$where}";
+        $totalRows = DB::findResultFromTheInfo($sqlCount,$rowsField);
+        //say('$totalRows',$totalRows);
+        $totalPage = page::getTotalPage($totalRows,$pageSize);
+        //say('$totalPage',$totalPage);
+        $offset = page::getOffsetByPage($p,$totalPage,$pageSize);
+        //say('$offset',$offset);
+        //
+        $fields = joinFieldsToSelect($fieldsArr);
+        //$hrefField = "concat('{$this->urlBase}/herodetail/',`ename`,'.shtml') as `detail_href`";
         //189/189.jpg
         $imgField = "concat('https://game.gtimg.cn/images/yxzj/img201606/heroimg/'".
             ",`ename`,'/',`ename`,'.jpg') as `hero_avatar`";
-        $sql = "select `id`,{$fields},{$hrefField},{$imgField} from `{$table}` {$where}";
+        $sql = "select {$fields},{$imgField} from `{$table}` {$where} limit {$offset},{$pageSize}";
         $list = DB::findAll($sql);
         if( false === empty($list) /*&& false === IS_LOCAL*/)
         {
-            return  $list;
+            $data = [
+                'list' => $list,
+//                'p' => $p,
+//                'pageSize' => $pageSize,
+                'totalPage' => $totalPage,
+                'totalRows' => intval($totalRows),
+            ];
+            if( true === IS_LOCAL)
+            {
+                $data['sqlCount'] = $sqlCount;
+                $data['sql'] = $sql;
+            }
+            return  $data;
         }
         $str = $this->grabHeroesJson();
         //
@@ -64,9 +88,17 @@ class PvpSpider
         }
         //
         DB::resetTable($table);
-        $this->StuffedHeroJSONIntoDB($list,$table,$fieldsArr);
+        $fieldsArr_insert = [
+            'new_type' => 'i',//i
+            'hero_type' => 'i',
+            'hero_type2' => 'i',
+            'pay_type' => 'i',//i
+        ];
+        $fieldsArr_insert = array_merge($fieldsArr,$fieldsArr_insert);
+        $this->StuffedHeroJSONIntoDB($list,$table,$fieldsArr_insert);
         $this->saveHeroesJsonToFile($str);
-        return $this->getHeroesList($where);
+        $i++;
+        return $i === 1 ? $this->getHeroesList($where,$p,$pageSize) : [];
     }
 
     public function grabHeroesJson():string
@@ -86,19 +118,18 @@ class PvpSpider
         $stmt = DB::getStmt($preSql);
         $sArr = array_values($fieldsArr);
         $sStr = implode('',$sArr);
-        $stmt->bind_param($sStr, $ename, $cname, $title,$new_type,
-            $hero_type, $hero_type2, $pay_type, $skin_name);
+        $dbFieldsArr  = array_keys($fieldsArr);
+        $vToBind = array_fill(0, $L,'v');
+        $stmt->bind_param($sStr, $vToBind[0], $vToBind[1], $vToBind[2],$vToBind[3],
+            $vToBind[4], $vToBind[5],$vToBind[6],$vToBind[7]);
         // 设置参数并执行
         foreach ($list as $key => $item)
         {
-            $ename = getItemFromArray($item,'ename',null);
-            $cname = getItemFromArray($item,'cname',null);
-            $title = getItemFromArray($item,'title',null);
-            $new_type = getItemFromArray($item,'new_type',null);
-            $hero_type = getItemFromArray($item,'hero_type',null);
-            $hero_type2 = getItemFromArray($item,'hero_type2',null);
-            $pay_type = getItemFromArray($item,'pay_type',null);
-            $skin_name = getItemFromArray($item,'skin_name',null);
+            foreach ($vToBind as $seq => $value)
+            {
+                $field = $dbFieldsArr[$seq];
+                $vToBind[$seq] = getItemFromArray($item,$field,null);
+            }
             $stmt->execute();
         }
     }
@@ -282,8 +313,9 @@ class PvpSpider
 
     //=======================================================================================
 
-    public function getItemList($where):array
+    public function getItemList($where,$p,$pageSize):array
     {
+        static $i = 0;
         $descriptionField = 'des1';
         $fieldsArr = [
             $descriptionField => 's',
@@ -295,17 +327,36 @@ class PvpSpider
         ];
         $table = 'item_json';
         //
-        $fields = joinFieldsToSelect($fieldsArr);
         $where = '' === $where ? '': "where {$where}";
+        $rowsField = 'totalRows';
+        $sqlCount = "select count(`id`) as `{$rowsField}` from `{$table}` {$where}";
+        $totalRows = DB::findResultFromTheInfo($sqlCount,$rowsField);
+        $totalPage = page::getTotalPage($totalRows,$pageSize);
+        $offset = page::getOffsetByPage($p,$totalPage,$pageSize);
+        //
+        //
+        $fields = joinFieldsToSelect($fieldsArr);
+
         ////game.gtimg.cn/images/yxzj/img201606/itemimg/1314.jpg
         $imgField = "concat('https://game.gtimg.cn/images/yxzj/img201606/itemimg/'".
             ",`item_id`,'.jpg') as `item_img`";
-        $sql = "select `id`,{$fields},{$imgField} from `{$table}` {$where}";
+        $sql = "select {$fields},{$imgField} from `{$table}` {$where}  limit {$offset},{$pageSize}";
         $list = DB::findAll($sql);
         if( false === empty($list) /*&& false === IS_LOCAL*/)
         {
-            $list = $this->washDesOfItemList($list,$descriptionField);
-            return  $list;
+            $data = [
+                'list' => $this->washDesOfItemList($list,$descriptionField),
+//                'p' => $p,
+//                'pageSize' => $pageSize,
+                'totalPage' => $totalPage,
+                'totalRows' => intval($totalRows),
+            ];
+            if( true === IS_LOCAL)
+            {
+                $data['sqlCount'] = $sqlCount;
+                $data['sql'] = $sql;
+            }
+            return  $data;
         }
         $str = $this->grabItemJson();
         $str = substr($str,0);//必须 加这一行代码
@@ -319,7 +370,8 @@ class PvpSpider
         DB::resetTable($table);
         $this->StuffedItemJSONIntoDB($list,$table,$fieldsArr);
         $this->saveItemJsonToFile($str);
-        return $this->getItemList($where);
+        $i++;
+        return $i === 1 ? $this->getItemList($where,$p,$pageSize):[];
     }
 
     protected function washDesOfItemList($list,$descriptionField)
@@ -328,6 +380,7 @@ class PvpSpider
         foreach($list as $seq => $item)
         {
             $description = $item[$descriptionField];
+            $description = trim($description);
             $description = ltrim($description,'<p>');
             $description = rtrim($description,'</p>');
             $list[$seq][$descriptionField] = explode('<br>',$description);

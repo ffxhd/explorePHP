@@ -46,13 +46,13 @@ class Pvp
 
     protected function heroesWhere($rawSubmit)
     {
-        $type = getItemFromArray($rawSubmit,'complex',null);
+        /*$type = getItemFromArray($rawSubmit,'complex',null);
         if( $type !== null )
         {
             $type = $type === 'novice_recommendation' ? '11' : '10';
            return "`pay_type` = {$type}";
-        }
-        $heroTypeArr = [
+        }*/
+        /*$heroTypeArr = [
             'all'=> 0,//全部
             'tank'=> 3,//坦克
             'warrior'=>1,//战士
@@ -60,36 +60,40 @@ class Pvp
             'mage'=>2,//法师
             'shooter'=> 5,//射手
             'aid'=>6,//辅助
-        ];
+        ];*/
         $type = getItemFromArray($rawSubmit,'hero_type',null);
-        if( $type !== null )
+        /*if( $type !== null )
         {
             $type = getItemFromArray($heroTypeArr,$type,0);
-            return "`hero_type2` = {$type} OR `hero_type` = {$type} ";
+            return " `hero_type` = {$type} or (`hero_type2` = {$type}  and `pay_type` is null)";
+        }*/
+        $type = intval($type);
+        switch (true)
+        {
+            case $type > 0 && $type < 7:
+                return " `hero_type` = {$type} or (`hero_type2` = {$type}  and `pay_type` is null)";
+            case $type === 7://新手推荐
+                return "`pay_type` = 11";
+            case $type === 8://本周免费
+                return "`pay_type` = 10";
+            default:
         }
         return '';
     }
 
     public function getHeroesList()
     {
-        /*say('$_REQUEST',$_REQUEST);
-        say('$_GET',$_GET);
-        say('$_POST',$_POST);*/
         $where = $this->heroesWhere($_REQUEST);
-        /*say('$where',$where);
-        stop();*/
+        $p = getItemFromArray($_GET,'p',1);
+        $p = intval($p);
+        $pageSize = getItemFromArray($_GET,'pageSize',10);
+        $pageSize = intval($pageSize);
         $obj = new  PvpSpider();
-        $data = $obj->getHeroesList($where);
-        if( false === $_SERVER['IS_AJAX'] && true === $this->isDebug )
-        {
-            say('sql',DB::fetchSqlArr());
-            $L  = count($data);
-            say('$data的个数：',$L);
-            $cNameArr = array_column($data,'cname');
-            sort($cNameArr,SORT_STRING );
-            say('cName',$cNameArr);
-        }
-        outputApiData($data,__FUNCTION__.'--所有英雄');
+        $apiData = $obj->getHeroesList($where,$p,$pageSize);
+        $isSuccess = false === empty($apiData['list']) ;
+        $resMsg = true === $isSuccess ? '成功':'失败';
+        $data = creatApiData(0,"获取英雄列表数据{$resMsg}", $apiData);
+        return outputApiData($data,__FUNCTION__.'--所有英雄');
     }
 
     public function updateHeroesListForcibly()
@@ -146,29 +150,17 @@ class Pvp
 
     public function getItemList()
     {
-        /*$arr = [
-            'a的值', true,'b的值','b'
-        ];
-        say(...extract($arr));
-        stop();*/
-        /*say('$_REQUEST',$_REQUEST);
-        say('$_GET',$_GET);
-        say('$_POST',$_POST);*/
         $where = $this->itemWhere($_REQUEST);
-        /*say('$where',$where);
-        stop();*/
+        $p = getItemFromArray($_GET,'p',1);
+        $p = intval($p);
+        $pageSize = getItemFromArray($_GET,'pageSize',10);
+        $pageSize = intval($pageSize);
         $obj = new  PvpSpider();
-        $data = $obj->getItemList($where);
-        if( false === $_SERVER['IS_AJAX'] && true === $this->isDebug )
-        {
-            say('sql',DB::fetchSqlArr());
-            $L  = count($data);
-            say('$data的个数：',$L);
-            $cNameArr = array_column($data,'item_name');
-            sort($cNameArr,SORT_STRING );
-            say('cName',$cNameArr);
-        }
-        outputApiData($data,__FUNCTION__.'--所有道具');
+        $apiData = $obj->getItemList($where,$p,$pageSize);
+        $isSuccess = false === empty($apiData['list']) ;
+        $resMsg = true === $isSuccess ? '成功':'失败';
+        $data = creatApiData(0,"获取列表数据{$resMsg}", $apiData);
+        return outputApiData($data,__FUNCTION__.'--所有道具');
     }
 
     public function updateItemListForcibly()
