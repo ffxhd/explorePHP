@@ -201,6 +201,115 @@
     }
 }
 </pre>
+<hr>
+
+<p>英雄详情--GET
+    <span class="testUrl" style="margin-left:4%">
+        /<span class="controller">Hero</span>/<span>getAll</span>
+    </span>
+    <a href="/hero/getAll?eName=123" target="_blank" style="margin-left:4%">测试</a>
+</p>
+<table cellpadding="10" cellspacing="0" border="1">
+    <caption>参数</caption>
+    <thead>
+    <tr>
+        <th>参数</th>
+        <th>是否必需</th>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>解释</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>英雄编号</td>
+        <td>必需</td>
+        <td>eName</td>
+        <td>Integer</td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+<table cellpadding="10" cellspacing="0" border="1">
+    <caption>返回的数据</caption>
+    <thead>
+    <tr>
+        <th>参数</th>
+        <th>含义</th>
+        <th>说明</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>errorCode</td>
+        <td>错误码</td>
+        <td>为0时，为欢喜的结局</td>
+    </tr>
+    <tr>
+        <td>msg</td>
+        <td>提示信息</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>data</td>
+        <td>数据</td>
+        <td>仅在errorCode=0时，才不为空
+            <table  cellpadding="10" cellspacing="0" border="1">
+                <tr>
+                    <td>main</td><td></td><td>字典</td>
+                    <td><a href="/Hero/getDetail?eName=123" target="_blank">查看字段含义</a></td>
+                </tr>
+                <tr>
+                    <td>skin</td><td>皮肤</td><td>列表</td>
+                    <td><a href="/Hero/getSkins?eName=123" target="_blank">查看字段含义</a></td>
+                </tr>
+                <tr>
+                    <td>skill</td><td>技能</td><td>列表</td>
+                    <td><a href="/Hero/getSkills?eName=123" target="_blank">查看字段含义</a></td>
+                </tr>
+                <tr>
+                    <td>inscriptionMatch</td><td>铭文搭配</td><td>列表</td>
+                    <td><a href="/Hero/getInscriptionMatch?eName=123" target="_blank">查看字段含义</a></td>
+                </tr>
+                <tr>
+                    <td>skillsPlusSuggestions</td><td>技能加点建议</td><td>字典</td>
+                    <td><a href="/Hero/getSkillsPlusSuggestions?eName=123" target="_blank">查看字段含义</a></td>
+                </tr>
+                <tr>
+                    <td>outfitSuggestions</td><td>出装建议</td><td>列表</td>
+                    <td><a href="/Hero/getOutfitSuggestion?eName=123" target="_blank">查看字段含义</a></td>
+                </tr>
+                <tr>
+                    <td>relation</td><td>英雄关系</td><td>列表</td>
+                    <td><a href="/Hero/getRelations?eName=123" target="_blank">查看字段含义</a></td>
+                </tr>
+                <tr>
+                    <td>video</td><td>英雄攻略</td><td>列表</td>
+                    <td><a href="/Hero/getVideos?eName=123" target="_blank">查看字段含义</a></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<br/>
+<p>返回数据：json格式的字符串</p>
+<pre>
+
+</pre>
+<div>
+    以下备用接口全部需要传参数 eName（类型：int）--GET
+    <p>获取详情  /Hero/getDetail  <a href="/Hero/getDetail?eName=123" target="_blank">查看字段含义</a> </p>
+    <p>获取皮肤  /Hero/getSkins <a href="/Hero/getSkins?eName=123" target="_blank">查看字段含义</a></p>
+    <p>获取技能  /Hero/getSkills <a href="/Hero/getSkills?eName=123" target="_blank">查看字段含义</a></p>
+    <p>获取铭文搭配  /Hero/getInscriptionMatch <a href="/Hero/getInscriptionMatch?eName=123" target="_blank">查看字段含义</a></p>
+    <p>获取技能加点  /Hero/getSkillsPlusSuggestions <a href="/Hero/getSkillsPlusSuggestions?eName=123" target="_blank">查看字段含义</a></p>
+    <p>获取出装建议  /Hero/getOutfitSuggestion <a href="/Hero/getOutfitSuggestion?eName=123" target="_blank">查看字段含义</a></p>
+    <p>获取英雄关系  /Hero/getRelations <a href="/Hero/getRelations?eName=123" target="_blank">查看字段含义</a></p>
+    <p>获取视频  /Hero/getVideos <a href="/Hero/getVideos?eName=123" target="_blank">查看字段含义</a></p>
+</div>
+
 <hr/>
 <p>局内道具单选搜索框
     <span class="testUrl">
@@ -236,7 +345,8 @@
     <span class="testUrl">
         /<span class="controller">pvp</span>/<span>getItemList</span>
     </span>
-    <a href="" target="_blank" class="test">测试</a>
+    <a href="/pvp/getItemList?parent_type=0" target="_blank" >测试常规模式</a>
+    <a href="/pvp/getItemList?parent_type=1" target="_blank"  style="margin-left:3%">测试边境突围</a>
 </p>
 <table cellpadding="10" cellspacing="0" border="1">
     <caption>参数</caption>
@@ -457,6 +567,110 @@
     },
 </pre>
 <hr/>
+<p>视频列表 /video/getList
+    <a href="/video/getList?is_hot=0" target="_blank" style="margin-left:4%">全部视频</a>
+    <a href="/video/getList?is_hot=1&pageSize=5" target="_blank" style="margin-left:4%">热播视频</a>
+</p>
+<table cellpadding="10" cellspacing="0" border="1">
+    <caption>参数</caption>
+    <thead>
+    <tr>
+        <th>参数</th>
+        <th>是否必需</th>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>解释</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>页码</td>
+        <td>非必需</td>
+        <td>p</td>
+        <td>Integer</td>
+        <td>需要第p页的列表数据。热播不需要此参数</td>
+    </tr>
+    <tr>
+        <td>每页条数</td>
+        <td>非必需</td>
+        <td>pageSize</td>
+        <td>Integer</td>
+        <td>每页显示pageSize条数据，默认10条。<br/>
+            热播也需要此参数，用以指定需要多少条，默认5条。
+        </td>
+    </tr>
+    <tr>
+        <td>热播? 全部?</td>
+        <td>非必需</td>
+        <td>is_hot</td>
+        <td>int</td>
+        <td>
+            <p>【热播】的话，参数值必须大于0</p>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<pre>
+    列表数据其中一条：
+    <!--url  视频完整链接-->
+    vid  视频id
+    title  标题
+    link  链接
+    img_src  封面图
+    detail_url  详情链接
+    author  作者名称
+    duration 视频时长
+    counts  播放量
+    upload_time 视频上传时间
+    introduction  介绍
+    like_count  点赞数
+    game_name  游戏类型，比如“王者荣耀”
+    author_count  作者id
+    author_src 作者头像
+</pre>
+<p>视频列表 /video/getInfoWithRelatedVideos
+    <a href="/video/getInfoWithRelatedVideos?id=104857909" target="_blank" style="margin-left:4%">详情+推荐列表</a>
+</p>
+<table cellpadding="10" cellspacing="0" border="1">
+    <caption>参数</caption>
+    <thead>
+    <tr>
+        <th>参数</th>
+        <th>是否必需</th>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>解释</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>页码</td>
+        <td>非必需</td>
+        <td>p</td>
+        <td>Integer</td>
+        <td>需要第p页的列表数据。热播不需要此参数</td>
+    </tr>
+    <tr>
+        <td>每页条数</td>
+        <td>非必需</td>
+        <td>pageSize</td>
+        <td>Integer</td>
+        <td>每页显示pageSize条数据，默认10条。热播也需要此参数，用指定需要多少条。</td>
+    </tr>
+    <tr>
+        <td>热播? 全部?</td>
+        <td>非必需</td>
+        <td>is_hot</td>
+        <td>int</td>
+        <td>
+            <p>【热播】的话，参数值必须是1</p>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+
+<hr/>
 <div id="user_mod">
     <table cellpadding="10" cellspacing="0" border="1">
         <caption>返回的数据</caption>
@@ -601,14 +815,16 @@
             <th>是否必需</th>
             <th>参数名</th>
             <th>类型</th>
+            <th>解释</th>
         </tr>
         </thead>
         <tbody>
         <tr>
-            <td>服务端返回的头像图片的名称</td>
+            <td></td>
             <td>必需</td>
             <td>avatar</td>
-            <td>String</td>
+            <td>File</td>
+            <td></td>
         </tr>
         </tbody>
     </table>
@@ -625,22 +841,46 @@
             /<span class="controller">user</span>/<span>modifyUserInfo</span>
         </span>
     </p>
+    <table cellpadding="10" cellspacing="0" border="1">
+        <caption>只有成功修改用户资料，数据表中的头像地址才会变化</caption>
+        <thead>
+        <tr>
+            <th>参数</th>
+            <th>是否必需</th>
+            <th>参数名</th>
+            <th>类型</th>
+            <th>解释</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td></td>
+            <td>非必需</td>
+            <td>avatar</td>
+            <td>string</td>
+            <td>例如:aspsds8dfkjd6.jpg。考虑到可能没有上传图片</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>必需</td>
+            <td>age</td>
+            <td>int</td>
+            <td>例如:34</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>必需</td>
+            <td>sex</td>
+            <td>string</td>
+            <td>例如:男</td>
+        </tr>
+        </tbody>
+    </table>
     <label for="avatarImg">头像</label><input type="image" value="" id="avatarImg" alt="" src=""/>
     <label for="age">年纪</label><input type="number" id="age"  value="28"/>
     <label for="sex">性别</label><input type="text"  id="sex" value="男" />
     <button type="button" onclick="obj.modifyUserInfo(this)" data-url="">修改用户资料</button>
     <hr/>
-</div>
-<div>
-    以下接口全部需要传参数 eName（类型：int）--GET
-    <p>获取详情  /Hero/getDetail</p>
-    <p>获取皮肤  /Hero/getSkins</p>
-    <p>获取技能  /Hero/getSkills</p>
-    <p>获取铭文搭配  /Hero/getInscriptionMatch</p>
-    <p>获取技能加点  /Hero/getSkillsPlusSuggestions</p>
-    <p>获取出装建议  /Hero/getOutfitSuggestion</p>
-    <p>获取英雄关系  /Hero/getRelations</p>
-    <p>获取视频  /Hero/getVideos</p>
 </div>
 
 <div id="dialog" class="dialog">

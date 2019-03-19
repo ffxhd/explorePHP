@@ -1,5 +1,5 @@
 <?php
-namespace onRequest\core\db;;
+namespace onRequest\core\db;
 //MySQLi面向对象
 class MySQLiOOP{
     private $conn = null;
@@ -85,63 +85,90 @@ EOF;
         $this->sqlArr[] = $sql;
         $conn = $this->conn;
         $query = $conn->query($sql);
-        if($query !== false )
-        {
-            return $query;
-        }
-        else
+        if($query === false )
         {
             $this->err('您的SQL语句：<mark>'.$sql."</mark><br/>错误：<span style=\"background-color:yellow;color:red\">{$conn->error}</span>");
         }
+        return $query;
     }
 
     /**执行多条sql语句
-     * $sql=; $sql.=; $sql.=; $sql.=;
-     * @param unknown $sql
-     * @return boolean
+     * @param array $sqlArr
+     * @return bool
      */
-    function multiQuery($sql)
+    function multiQuery($sqlArr)
     {
-        $conn=$this->conn;
-        $query=$conn->multi_query($sql) ;
-        if($query !== false )
-        {
-            return $query;
-        }
-        else
+        $conn = $this->conn;
+        $sql = implode(';',$sqlArr);
+        $query = $conn->multi_query($sql) ;
+        if($query === false )
         {
             $this->err('您的SQL语句：'.$sql."<br/>错误：".$conn->error);
         }
+        return $query;
+    }
+
+    /**
+     * @param array $sqlArr
+     * @param bool $allItemAreList
+     * @return array
+     */
+    public function multiFind($sqlArr,$allItemAreList)
+    {
+        $this->sqlArr[] = $sqlArr;
+        $con=$this->conn;
+        //say('$sql',$sql);
+        $query = $this->multiQuery($sqlArr);
+        //$result = $query->fetch_all();
+        if( !$query)
+        {
+            return [];
+        }
+        $keyArr = array_keys($sqlArr);
+        $allData = [];
+        $i = 0;
+        do
+        {
+            if( $i > 0)
+            {
+                mysqli_next_result($con);
+            }
+            $key = $keyArr[$i];
+            $result = $con->store_result();// 存储第一个结果集
+            if( $result )
+            {
+                $L = $result->num_rows;
+                //say('$L',$L);
+                $data = $result->fetch_all(MYSQLI_ASSOC);
+                //say('fetch_all-$data',$data);
+                if( false === $allItemAreList && $L === 1)
+                {
+                    $data = $data[0];
+                }
+                $allData[$key] = $data;
+                $result->free();
+                $i++;
+            }
+        }
+        while ($con->more_results());
+        return $allData;
     }
 
     /**
      *列表
      *
-     *@param source $query sql语句通过$conn->query 执行出来的资源
+     *@param resource $query sql语句通过$conn->query 执行出来的资源
      *@return array   返回列表数组
      **/
     function findAll($query)
     {
-        /*$conn=$this->conn;
-        while($rs=$conn->fetch_array($query,MYSQL_ASSOC))
-        {
-            $list[]=$rs;
-        }
-        return isset($list)? $list: array();*/
-
-        while($rs=$query->fetch_array(MYSQLI_ASSOC))
-        {
-            $list[]=$rs;
-        }
-        return isset($list)? $list: array();
+        return $query->fetch_all(MYSQLI_ASSOC);
     }
 
-    /**
-     *单条
-     *
-     *@param source $query sql语句通过$conn->query执行出的来的资源
-     *return array   返回单条信息数组
-     **/
+    /**单条
+     * @param resource $query sql语句通过$conn->query执行出的来的资源
+     * @return array 返回单条信息数组
+     */
     function findOne($query)
     {
         $rs = $query->fetch_array(MYSQLI_ASSOC );
@@ -155,11 +182,12 @@ EOF;
     }
 
     /**
-     *指定行的指定字段的值
-     *
-     *@param source $query sql语句通过$conn->query执行出的来的资源
-     *return array   返回指定行的指定字段的值
-     **/
+     * 指定行的指定字段的值
+     * @param resource $query $query sql语句通过$conn->query执行出的来的资源
+     * @param $row
+     * @param string $field 指定字段的
+     * @return mixed 返回指定行的指定字段的值
+     */
     function findResult($query,$row,$field)
     {
         /* fetch object array */
@@ -174,12 +202,10 @@ EOF;
         }
     }
 
-    /**
-     * 添加函数
-     *
+    /**添加函数
      * @param string $table 表名
      * @param array $arr 添加数组（包含字段和值的一维数组）
-     *
+     * @return mixed
      */
     function insert($table,$arr)
     {
@@ -286,13 +312,12 @@ EOF;
         $conn->query("COMMIT");//执行事务
     }
 
-    /**
-     *删除函数
-     *
-     *@param string $table 表名
-     *@param string $where 条件
-     **/
-    function del($table,$where)
+    /**删除函数
+     * @param string $table
+     * @param string $where
+     * @return bool
+     */
+    function delete($table,$where)
     {
         $sql='delete from '.$table.' where '.$where;
         return $this->query($sql);

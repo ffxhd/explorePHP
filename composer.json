@@ -3,6 +3,8 @@
         "jaeger/querylist": "^4.1",
         "ext-json": "*",
         "ext-exif": "*",
+        "ext-mysqli": "*",
+        "ext-iconv": "*",
         "jaeger/querylist-phantomjs": "^4.0"
     }
 }

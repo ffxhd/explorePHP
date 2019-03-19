@@ -95,7 +95,10 @@ class HttpServer
             PC::$response = $response;
             PC::run($config);
             //将$_SESSION弄到session池中
-            SessionFactory::setSessionToPool($session_id, $requestTime);
+            if( false === empty($_SESSION))
+            {
+                SessionFactory::setSessionToPool($session_id, $requestTime);
+            }
         }
         catch (\Error $e)
         {

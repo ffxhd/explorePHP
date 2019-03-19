@@ -8,7 +8,7 @@
 
 namespace onRequest\controller;
 use must\DB;
-
+use onRequest\spiderModel\HeroModel;
 class Hero
 {
     protected function setFieldWithMean($fields,$fieldsMeans)
@@ -19,6 +19,21 @@ class Hero
             $arr[$field] = $fieldsMeans[$key];
         }
         return $arr;
+    }
+
+    public function getAll()
+    {
+        $eName = getItemFromArray($_GET,'eName',0);
+        if( $eName < 1)
+        {
+            $data = creatApiData(1,'需要英雄的id');
+            return outputApiData($data);
+        }
+        $eName = intval($eName);
+        $obj = new HeroModel();
+        $apiData = $obj->getAll($eName);
+        $data = creatApiData(0,'获取英雄的详情数据成功',$apiData);
+        return outputApiData($data);
     }
 
     public function getDetail()

@@ -22,6 +22,7 @@ class DB{
         $charset = $config['charset'];//字符集/编码
         unset($config);
         self::$db = new $db_type($host,$user,$password,$databaseName,$charset);
+        //self::$db = new \onRequest\core\db\MySQLiOOP($host,$user,$password,$databaseName,$charset);
     }
 
     public static function showTables($db_name)
@@ -51,6 +52,12 @@ class DB{
 	    self::init();
 		return self::$db ->multiQuery($sql);
 	}
+
+    public static function multiFind($sqlArr,$allItemAreList=false)
+    {
+        self::init();
+        return self::$db ->multiFind($sqlArr,$allItemAreList);
+    }
 
 	public static function query_only($sql,$toInsert)
 	{
@@ -100,10 +107,10 @@ class DB{
 		return self::$db->update($table,$arr,$where);
 	}
 
-	public static function del($table,$where)
+	public static function delete($table,$where)
 	{
         self::init();
-		return self::$db->del($table,$where);
+		return self::$db->delete($table,$where);
 	}
 
 	public static function getStmt($preSql)

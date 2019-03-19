@@ -7,7 +7,7 @@
  */
 
 namespace onRequest\controller;
-use onRequest\spiderModel\PvpSpider;
+use onRequest\spiderModel\PvpDb as pvpModel;
 use must\DB;
 class Pvp
 {
@@ -19,7 +19,7 @@ class Pvp
 
     public function getPvpTabs()
     {
-        $obj = new  PvpSpider();
+        $obj = new  pvpModel();
         $data = $obj->getPvpTabs();
         outputApiData($data,__FUNCTION__.'--选项卡');
     }
@@ -28,7 +28,7 @@ class Pvp
 
     public function getHeroSearchRadios()
     {
-        $obj = new  PvpSpider();
+        $obj = new  pvpModel();
         $data = $obj->getHeroSearchRadios();
         if( false === $_SERVER['IS_AJAX'] && true === $this->isDebug )
         {
@@ -39,17 +39,22 @@ class Pvp
 
     public function updateHeroSearchRadiosForcibly()
     {
-        $obj = new  PvpSpider();
+        $obj = new  pvpModel();
     }
 
     //===============================================================
+
+    protected function where_heroName($name)
+    {
+        return "`cname` like '%{$name}%'";
+    }
 
     protected function heroesWhere($rawSubmit)
     {
         $name = getWashedData($rawSubmit,'hero_name','');
         if($name !== '')
         {
-            return "`cname` like '%{$name}%'";
+            return $this->where_heroName($name);
         }
         $type = getItemFromArray($rawSubmit,'hero_type',null);
         $type = intval($type);
@@ -73,7 +78,7 @@ class Pvp
         $p = intval($p);
         $pageSize = getItemFromArray($_GET,'pageSize',10);
         $pageSize = intval($pageSize);
-        $obj = new  PvpSpider();
+        $obj = new  pvpModel();
         $apiData = $obj->getHeroesList($where,$p,$pageSize);
         $isSuccess = false === empty($apiData['list']) ;
         $resMsg = true === $isSuccess ? '成功':'失败';
@@ -83,7 +88,7 @@ class Pvp
 
     public function updateHeroesListForcibly()
     {
-        $obj = new  PvpSpider();
+        $obj = new  pvpModel();
     }
 
     //===============================================================
@@ -91,7 +96,7 @@ class Pvp
 
     public function getItemSearchRadios()
     {
-        $obj = new  PvpSpider();
+        $obj = new  pvpModel();
         $data = $obj->getItemSearchRadios();
         if( false === $_SERVER['IS_AJAX'] && true === $this->isDebug )
         {
@@ -102,10 +107,20 @@ class Pvp
 
     public function updateItemSearchRadiosForcibly()
     {
-        $obj = new  PvpSpider();
+        $obj = new  pvpModel();
     }
 
     //===============================================================
+
+    protected function where_ItemName_0($name)
+    {
+        return "`item_name` like '%{$name}%'";
+    }
+
+    protected function where_ItemName_1($name)
+    {
+        return "`itemnamezwm_cd` like '%{$name}%'";
+    }
 
     protected function itemWhere($rawSubmit,$isRegularMode)
     {
@@ -124,7 +139,7 @@ class Pvp
 
     public function getItemList()
     {
-        $obj = new  PvpSpider();
+        $obj = new  pvpModel();
         $p = getItemFromArray($_GET,'p',1);
         $p = intval($p);
         $pageSize = getItemFromArray($_GET,'pageSize',10);
@@ -150,14 +165,19 @@ class Pvp
 
     public function updateItemListForcibly()
     {
-        $obj = new  PvpSpider();
+        $obj = new  pvpModel();
     }
 
     //===============================================================
 
+    protected function where_summonerName($name)
+    {
+        return "`summoner_name` like '%{$name}%'";
+    }
+
     public function getSummonerList()
     {
-        $obj = new  PvpSpider();
+        $obj = new  pvpModel();
         $data = $obj->getSummonerList();
         if( false === $_SERVER['IS_AJAX'] && true === $this->isDebug )
         {
@@ -172,6 +192,40 @@ class Pvp
     }
 
     //===============================================================
+
+    public function searchAll()
+    {
+        $keyword = getWashedData($_REQUEST,'keyword','');
+        if( $keyword === '')
+        {
+            $data = creatApiData(1,'需要关键字');
+            return outputApiData($data);
+        }
+        $obj = new  pvpModel();
+        $sqlArr = [];
+        $where = $this->where_heroName($keyword);
+        $sqlArr['hero'] = $obj->searchHeroSql($where);
+        //
+        $where = $this->where_ItemName_0($keyword);
+        $sqlArr['item_0'] = $obj->searchItemSql($where);
+        //
+        $where = $this->where_ItemName_1($keyword);
+        $sqlArr['item_1'] = $obj->searchBorderBreakOutItemSql($where);
+        //
+        $where = $this->where_summonerName($keyword);
+        $sqlArr['summoner'] = $obj->searchSummonerSql($where);
+        //
+        $apiData = DB::multiFind($sqlArr,true);
+        $apiData['item_0'] = $obj->washDesOfItemList($apiData['item_0'] );
+        //say('$apiData[\'item_1\']',$apiData['item_1']);
+        $apiData['item_1'] = $obj->washDesOfBorderBreakOutItemList($apiData['item_1'] );
+        //
+        $data = creatApiData(0,'获取数据成功',$apiData);
+        return outputApiData($data);
+    }
+
+    //===============================================================
+
     public function test()
     {
         $testObj = new \onRequest\spiderModel\TestQL();
