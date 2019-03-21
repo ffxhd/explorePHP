@@ -11,12 +11,22 @@ use must\DB;
 
 class HeroModel
 {
+    public static $sum_skill_field = 'sum_skill_src';
+    public static $bonus_field = 'bouns';
+
+    public static function getHeroMainFieldArr()
+    {
+        return [
+            'id', 'ename', 'title', 'cname', 'hvideo_url', 'viability', 'ad',
+            'cover_skill', 'difficulity', 'hero_story', 'inscr_tips', 'eq_tips',
+            'hvideo_url' => 'honor_link',
+            'tips1','tips2'
+        ];
+    }
+
     public function getAll($eName)
     {
-        $fieldsArr = [
-            'id', 'ename', 'title', 'cname', 'hvideo_url', 'viability', 'ad',
-            'cover_skill', 'difficulity', 'hero_story', 'inscr_tips', 'eq_tips', 'honor_link'
-        ];
+        $fieldsArr = $this->getHeroMainFieldArr();
         $fields = joinFieldsToSelect($fieldsArr);
         $sqlArr = [];
         $sqlArr['main'] = "select {$fields} from `honor_main` where `ename`= {$eName}";
@@ -37,11 +47,12 @@ class HeroModel
         $sqlArr['skill'] = "select {$fields},{$srcField} from `honor_skill` where `ename`= {$eName}";
         //铭文搭配
         $fieldsArr = [
-            'id', 'ename', 'name', 'bouns'
+            'id', 'ename', 'name', HeroModel::$bonus_field
         ];
         $srcField = "concat('https:',`src`) as `src`";
         $fields = joinFieldsToSelect($fieldsArr);
-        $sqlArr['inscriptionMatch'] = "select {$fields},{$srcField} from `honor_inscription_match` where `ename`= {$eName}";
+        $sqField_match = 'inscriptionMatch';
+        $sqlArr[$sqField_match] = "select {$fields},{$srcField} from `honor_inscription_match` where `ename`= {$eName}";
         //技能加点建议
         $fieldsArr = [
             'id', 'ename', 'm_up_skill', 'a_up_skill',
@@ -53,11 +64,13 @@ class HeroModel
         $srcField = 'a_up_src';
         $srcField2 = "concat('https:',`{$srcField}`) as `{$srcField}`";
         //
-        $srcField = 'sum_skill_src';
+        //$srcField = 'sum_skill_src';
+        $srcField = self::$sum_skill_field;
         $srcField3 = "concat('https:',`{$srcField}`) as `{$srcField}`";
         //
         $fields = joinFieldsToSelect($fieldsArr);
-        $sqlArr['skillsPlusSuggestions'] = "select {$fields},{$srcField1},{$srcField2},{$srcField3} from `honor_sug` where `ename`= {$eName}";
+        $sqlField_skillPlus = 'skillsPlusSuggestions';
+        $sqlArr[$sqlField_skillPlus] = "select {$fields},{$srcField1},{$srcField2},{$srcField3} from `honor_sug` where `ename`= {$eName}";
         //出装建议
         $fieldsArr = [
             'id', 'ename', 'eq_name', 'eq_price', 'eq_total_price', 'eq_bonus',
@@ -87,6 +100,35 @@ class HeroModel
         $fields = joinFieldsToSelect($fieldsArr);
         $sqlArr['video'] = "select {$fields},{$srcField1} from `honor_video` where `ename`= {$eName}";
         //
-        return DB::multiFind($sqlArr);
+        $data = DB::multiFind($sqlArr);
+        $data[$sqlField_skillPlus] = self::washSkillsPlusSuggestions($data[$sqlField_skillPlus]);
+        $data[$sqField_match] = self::washInscriptionMatch($data[$sqField_match]);
+        return $data;
+    }
+
+    public static function washSkillsPlusSuggestions($info)
+    {
+        //say('$info',$info);
+        $srcField = self::$sum_skill_field;
+        if($info)
+        {
+            $info[$srcField] = explode(',', $info[$srcField]);
+            $info[$srcField][1] = 'https:'.$info[$srcField][1];
+        }
+        return $info;
+        //say('处理后$info',$info);
+    }
+
+    public static function washInscriptionMatch($list)
+    {
+        $field = self::$bonus_field;
+        if($list)
+        {
+            foreach ($list as $seq => $info)
+            {
+                $list[$seq][$field] = explode(',', $info[$field]);
+            }
+        }
+        return $list;
     }
 }

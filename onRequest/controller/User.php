@@ -69,8 +69,8 @@ from `user` where `user_name` = '{$userName}'";
         $userId = $_SESSION['userInfo']['id'];
         $formalDir = self::$avatarFormalDir;
         $avatarField = "concat('onRequest/public',`avatar`) as `avatar`";
-        $sql = "select `user_name`,{$avatarField},`register_time`,`age`,`sex` 
-from `user` where `id` = {$userId}";
+        $sql = "select `user_name`,{$avatarField},`register_time`,`age`,`sex`,
+       `nickname`,`signature` from `user` where `id` = {$userId}";
         $info = DB::findOne($sql);
         $isSuccess = false === empty($info) ;
         $resMsg = true === $isSuccess ? '成功':'失败';
@@ -138,12 +138,27 @@ from `user` where `id` = {$userId}";
         $avatar = getWashedData($_POST,'avatar','');
         $age = getWashedData($_POST,'age',null);
         $sex = getWashedData($_POST,'sex',null);
+        $nickname = getWashedData($_POST,'nickname',null);
+        $signature = getWashedData($_POST,'signature',null);
         $formalDir = self::$avatarFormalDir;
         $avatarForDb = "{$formalDir}/{$avatar}";
-        $arr = [
-            'age'=>$age,
-            'sex'=>$sex,
-        ];
+        $arr = [];
+        if( $age!== null)
+        {
+            $arr['age'] = $age;
+        }
+        if( $sex!== null)
+        {
+            $arr['sex'] = $sex;
+        }
+        if( $nickname!== null)
+        {
+            $arr['nickname'] = $nickname;
+        }
+        if( $signature!== null)
+        {
+            $arr['signature'] = $signature;
+        }
         $isExistAvatar = $avatar !== '';
         if( true === $isExistAvatar)
         {

@@ -34,7 +34,7 @@
     <script src="../js/library/jquery-3.3.1.min.js"></script>
     <script src="../js/util/file.js"></script>
 </head>
-<body style="font-size: 20px">
+<body style="font-size: 16px">
 <!--<p>选项卡  /spider/getPvpTabs</p>-->
 <!--<img src="/onRequest/public/images/pvp/tabs.jeg"/ >-->
 <h3>header头务必设置x-requested-with（不区分大小写，推荐X-Requested-With），
@@ -207,7 +207,7 @@
     <span class="testUrl" style="margin-left:4%">
         /<span class="controller">Hero</span>/<span>getAll</span>
     </span>
-    <a href="/hero/getAll?eName=123" target="_blank" style="margin-left:4%">测试</a>
+    <a href="/hero/getAll?eName=529" target="_blank" style="margin-left:4%">测试(盘古)</a>
 </p>
 <table cellpadding="10" cellspacing="0" border="1">
     <caption>参数</caption>
@@ -567,6 +567,45 @@
     },
 </pre>
 <hr/>
+
+<p>搜索英雄名称、局内道具名称或者召唤师技能名称 /pvp/searchAll
+    <a href="/pvp/searchAll?keyword=星" target="_blank" style="margin-left:4%">搜索“星”</a>
+</p>
+<table cellpadding="10" cellspacing="0" border="1">
+    <caption>参数</caption>
+    <thead>
+    <tr>
+        <th>参数</th>
+        <th>是否必需</th>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>解释</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>关键词</td>
+        <td>必需</td>
+        <td>keyword</td>
+        <td>string</td>
+        <td>目前不考虑分页</td>
+    </tr>
+    </tbody>
+</table>
+<pre>
+{
+    "errorCode": 0,
+    "msg": "获取数据成功",
+    "data": {
+        "hero": [],//英雄
+        "item_0": [],//局内道具--常规模式
+        "item_1": [],//局内道具--边境突围模式
+        "summoner": []// 召唤师技能
+    }
+}
+</pre>
+<hr/>
+
 <p>视频列表 /video/getList
     <a href="/video/getList?is_hot=0" target="_blank" style="margin-left:4%">全部视频</a>
     <a href="/video/getList?is_hot=1&pageSize=5" target="_blank" style="margin-left:4%">热播视频</a>
@@ -645,30 +684,65 @@
     <tbody>
     <tr>
         <td>页码</td>
-        <td>非必需</td>
-        <td>p</td>
+        <td>必需</td>
+        <td>id</td>
         <td>Integer</td>
-        <td>需要第p页的列表数据。热播不需要此参数</td>
-    </tr>
-    <tr>
-        <td>每页条数</td>
-        <td>非必需</td>
-        <td>pageSize</td>
-        <td>Integer</td>
-        <td>每页显示pageSize条数据，默认10条。热播也需要此参数，用指定需要多少条。</td>
-    </tr>
-    <tr>
-        <td>热播? 全部?</td>
-        <td>非必需</td>
-        <td>is_hot</td>
-        <td>int</td>
-        <td>
-            <p>【热播】的话，参数值必须是1</p>
-        </td>
+        <td>视频记录的vid</td>
     </tr>
     </tbody>
 </table>
 
+<table cellpadding="10" cellspacing="0" border="1">
+    <caption>
+        <p>视频列表 /video/getMostHotVideos
+            <a href="/video/getMostHotVideos?pageSize=2" target="_blank" style="margin-left:4%">最热视频</a>
+        </p>
+    </caption>
+    <thead>
+    <tr>
+        <th>参数</th>
+        <th>是否必需</th>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>解释</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>需要的记录数量</td>
+        <td>非必需</td>
+        <td>pageSize</td>
+        <td>Integer</td>
+        <td>用以指定需要多少条记录。默认5条</td>
+    </tr>
+    </tbody>
+</table>
+<pre>
+    {
+    "errorCode": 0,
+    "msg": "获取列表数据成功",
+    "data": {
+        "list": {
+            "0": {
+                "vid": "128117555",
+                "title": "穿越火线：一局出现两个终结者，这游戏还怎么玩？",
+                "link": "http://huya-w10.huya.com/1909/128117555/yuanhua/a09417657226d6d4792fc32b83489964.mp4",
+                "img_src": "http://v-huya-img.huya.com/1909/128117555/99-460x268.jpg",
+                "detail_url": "http://v.huya.com/play/128117555.html",
+                "author": "玩命解说",
+                "duration": "05:41",
+                "counts": "999",
+                "upload_time": "2019-02-28 15:35:10",
+                "introduction": "玩命QQ：2481344245",
+                "like_count": "3",
+                "game_name": "穿越火线",
+                "author_count": "10761",
+                "author_src": "http://huyaimg.msstatic.com/avatar/1075/18/627970460e2ae623c8758f475820c3_180_135.jpg?1517925692"
+            },
+        }
+    }
+}
+</pre>
 
 <hr/>
 <div id="user_mod">
@@ -854,32 +928,52 @@
         </thead>
         <tbody>
         <tr>
-            <td></td>
+            <td>头像图片的文件名</td>
             <td>非必需</td>
             <td>avatar</td>
             <td>string</td>
             <td>例如:aspsds8dfkjd6.jpg。考虑到可能没有上传图片</td>
         </tr>
         <tr>
-            <td></td>
-            <td>必需</td>
+            <td>年纪</td>
+            <td>非必需</td>
             <td>age</td>
             <td>int</td>
             <td>例如:34</td>
         </tr>
         <tr>
-            <td></td>
-            <td>必需</td>
+            <td>性别</td>
+            <td>非必需</td>
             <td>sex</td>
             <td>string</td>
             <td>例如:男</td>
+        </tr>
+        <tr>
+            <td>昵称</td>
+            <td>非必需</td>
+            <td>nickname</td>
+            <td>string</td>
+            <td>例如:飞飞小坏蛋</td>
+        </tr>
+        <tr>
+            <td>个性签名</td>
+            <td>非必需</td>
+            <td>signature</td>
+            <td>string</td>
+            <td>例如:mongDB可以远程访问了，嘻嘻...</td>
         </tr>
         </tbody>
     </table>
     <label for="avatarImg">头像</label><input type="image" value="" id="avatarImg" alt="" src=""/>
     <label for="age">年纪</label><input type="number" id="age"  value="28"/>
     <label for="sex">性别</label><input type="text"  id="sex" value="男" />
-    <button type="button" onclick="obj.modifyUserInfo(this)" data-url="">修改用户资料</button>
+    <label for="nickname">昵称</label><input type="text"  id="nickname" value="男" />
+    <br/>
+    <div style="margin-top:1%;">
+        <label for="signature">个性签名</label>
+        <textarea id="signature">我的个性签名</textarea>
+    </div>
+    <button type="button" onclick="obj.modifyUserInfo(this)" data-url="/user/modifyUserInfo">修改用户资料</button>
     <hr/>
 </div>
 
@@ -1046,6 +1140,8 @@
                     avatar:$('#avatarImg').val(),
                     age:$('#age').val(),
                     sex:$('#sex').val(),
+                    nickname:$('#nickname').val(),
+                    signature:$('#signature').val(),
                 },
                 success:function (result) {
                     alert(result.msg);

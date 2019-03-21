@@ -43,7 +43,7 @@ class VideoModel
         return "select {$fields}from `{$table}` {$where}";//,{$imgField}
     }
 
-    public function getAllByPage($where,$p,$pageSize)
+    public function getAllByPage($where,$p,$pageSize,$orderBy='')
     {
         $table = $this->videoConfig['table'];
         $whereCount = '' === $where ? '': "where {$where}";
@@ -57,7 +57,8 @@ class VideoModel
         //say('$offset',$offset);
         //
         $sqlPart = $this->searchHeroSql($where);
-        $sql = "{$sqlPart} limit {$offset},{$pageSize}";
+        $orderBy = $orderBy === ''? '' : $orderBy;
+        $sql = "{$sqlPart} {$orderBy} limit {$offset},{$pageSize}";
         $list = DB::findAll($sql);
         $data = [
             'list' => $list,
@@ -80,6 +81,20 @@ class VideoModel
         $where = "id >= (SELECT floor(RAND() * (SELECT MAX(id) FROM `{$table}`)))";
         $p = 1;
         return $this->getAllByPage($where,$p,$pageSize);
+    }
+
+    public function getMostHotVideos($pageSize)
+    {
+        $where = '';
+        $orderBy = 'order by  `counts` desc';
+        $sqlPart = $this->searchHeroSql($where);
+        $sql = "{$sqlPart} {$orderBy} limit 0,{$pageSize}";
+        $data = DB::findAll($sql);
+        if( true === IS_LOCAL)
+        {
+            $data['sql'] = $sql;
+        }
+        return $data;
     }
 
     public function getInfoWithRelatedVideos($id)

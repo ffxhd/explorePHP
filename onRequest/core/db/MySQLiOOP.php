@@ -103,7 +103,8 @@ EOF;
         $query = $conn->multi_query($sql) ;
         if($query === false )
         {
-            $this->err('您的SQL语句：'.$sql."<br/>错误：".$conn->error);
+            $this->err("错误：".$conn->error);
+            say('您的sql语句有：',$sqlArr);
         }
         return $query;
     }

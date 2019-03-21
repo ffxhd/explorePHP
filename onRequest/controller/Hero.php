@@ -45,10 +45,7 @@ class Hero
             return outputApiData($data);
         }
         $eName = intval($eName);
-        $fieldsArr = [
-            'id', 'ename', 'title', 'cname', 'hvideo_url', 'viability', 'ad',
-            'cover_skill', 'difficulity', 'hero_story', 'inscr_tips', 'eq_tips', 'honor_link'
-        ];
+        $fieldsArr = HeroModel::getHeroMainFieldArr();
         $fieldsMeansArr = [
             '主键', '英雄编号', '外号', '英雄名字', '英雄视频详情url', '生存能力', '攻击伤害',
             '技能效果', '上手难度', '英雄故事', '铭文附加介绍', '出装附加介绍', '英雄介绍视频链接'
@@ -140,7 +137,7 @@ class Hero
         }
         $eName = intval($eName);
         $fieldsArr = [
-            'id', 'ename', 'name', 'bouns'
+            'id', 'ename', 'name', HeroModel::$bonus_field
         ];
         $fieldsMeansArr = [
             '主键', '英雄编号', '铭文名称', '铭文效果'
@@ -150,11 +147,12 @@ class Hero
         $field_mean['src'] = '铭文图片url';
         $fields = joinFieldsToSelect($fieldsArr);
         $sql = "select {$fields},{$srcField} from `honor_inscription_match` where `ename`= {$eName}";
-        $info = DB::findAll($sql);
-        $isSuccess = false === empty($info) ;
+        $data = DB::findAll($sql);
+        $data = HeroModel::washInscriptionMatch($data);
+        $isSuccess = false === empty($data) ;
         $resMsg = true === $isSuccess ? '成功':'失败';
         $apiData = [
-            'list'=>$info,
+            'list'=>$data,
             'field_mean'=>$field_mean
         ];
         $data = creatApiData(0,"获取英雄铭文搭配数据{$resMsg}", $apiData);
@@ -188,13 +186,17 @@ class Hero
         $field_mean[$srcField] = '副升技能图片';
         $srcField2 = "concat('https:',`{$srcField}`) as `{$srcField}`";
         //
-        $srcField = 'sum_skill_src';
+        //$srcField = 'sum_skill_src';
+        $srcField = HeroModel::$sum_skill_field;
         $field_mean[$srcField] = '召唤师技能图片url';
         $srcField3 = "concat('https:',`{$srcField}`) as `{$srcField}`";
         //
         $fields = joinFieldsToSelect($fieldsArr);
         $sql = "select {$fields},{$srcField1},{$srcField2},{$srcField3} from `honor_sug` where `ename`= {$eName}";
         $info = DB::findOne($sql);
+        //
+        $info = HeroModel::washSkillsPlusSuggestions($info);
+        //
         $isSuccess = false === empty($info) ;
         $resMsg = true === $isSuccess ? '成功':'失败';
         $apiData = [
