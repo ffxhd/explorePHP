@@ -12,7 +12,7 @@ use onRequest\core\page;
 
 class VideoModel
 {
-    protected $videoConfig = [
+    public $videoConfig = [
         'table' =>'honor_movies',
         'fieldsArr'=>[
             'vid' => 's',
@@ -33,7 +33,8 @@ class VideoModel
         /*'imgField'=>"concat('https://game.gtimg.cn/images/yxzj/img201606/heroimg/'".
             ",`ename`,'/',`ename`,'.jpg') as `hero_avatar`",*/
     ];
-    public function searchHeroSql($where)
+
+    public function searchSql($where)
     {
         $table = $this->videoConfig['table'];
         $fieldsArr = $this->videoConfig['fieldsArr'];
@@ -43,12 +44,13 @@ class VideoModel
         return "select {$fields}from `{$table}` {$where}";//,{$imgField}
     }
 
-    public function getAllByPage($where,$p,$pageSize,$orderBy='')
+    public function getAllByPage($where,$p,$pageSize,$orderBy='',$join='')
     {
         $table = $this->videoConfig['table'];
         $whereCount = '' === $where ? '': "where {$where}";
         $rowsField = 'totalRows';
-        $sqlCount = "select count(`id`) as `{$rowsField}` from `{$table}` {$whereCount}";
+        $join = $join !== ''? " as a {$join}" : $join;
+        $sqlCount = "select count(`vid`) as `{$rowsField}` from `{$table}` {$join} {$whereCount}";
         $totalRows = DB::findResultFromTheInfo($sqlCount,$rowsField);
         //say('$totalRows',$totalRows);
         $totalPage = page::getTotalPage($totalRows,$pageSize);
@@ -56,9 +58,9 @@ class VideoModel
         $offset = page::getOffsetByPage($p,$totalPage,$pageSize);
         //say('$offset',$offset);
         //
-        $sqlPart = $this->searchHeroSql($where);
+        $sqlPart = $this->searchSql($where);
         $orderBy = $orderBy === ''? '' : $orderBy;
-        $sql = "{$sqlPart} {$orderBy} limit {$offset},{$pageSize}";
+        $sql = "{$sqlPart} {$join} {$orderBy} limit {$offset},{$pageSize}";
         $list = DB::findAll($sql);
         $data = [
             'list' => $list,
@@ -87,7 +89,7 @@ class VideoModel
     {
         $where = '';
         $orderBy = 'order by  `counts` desc';
-        $sqlPart = $this->searchHeroSql($where);
+        $sqlPart = $this->searchSql($where);
         $sql = "{$sqlPart} {$orderBy} limit 0,{$pageSize}";
         $data = DB::findAll($sql);
         if( true === IS_LOCAL)

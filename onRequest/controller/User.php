@@ -11,7 +11,10 @@ use must\DB;
 use  \onRequest\core\upload;
 use  \onRequest\core\dir;
 use \must\PC;
-use onRequest\spiderModel\HeroModel;
+use onRequest\spiderModel\Like;
+use onRequest\spiderModel\PvpDb as pvpModel;
+use onRequest\controller\Pvp;
+use onRequest\spiderModel\VideoModel;
 class User
 {
     public static $avatarTempDir = 'temp_uploads';
@@ -88,12 +91,94 @@ from `user` where `user_name` = '{$userName}'";
             return outputApiData($data);
         }
         $userId = User::getUserId();
-        $obj = new HeroModel();
+        $obj = new Like();
+        $operation = $like > 0 ? '点赞':'取消点赞';
         $apiData = $obj->likeTheHeroOrNot($eName,$like,$userId);
         //
-        $operation = $like > 0 ? '点赞':'取消点赞';
-        $data = creatApiData(0,"{$operation}成功",$apiData);
+        $msg = is_string($apiData)? $apiData : "{$operation}成功";
+        $data = creatApiData(0,$msg, $apiData);
         return outputApiData($data);
+    }
+
+    public function  likeTheMovieOrNot()
+    {
+        if( false === User::isHaveLogin())
+        {
+            $data = creatApiData(1,"未登录...");
+            return  outputApiData($data);
+        }
+        //
+        $vid = getItemFromArray($_GET,'vid',0);
+        if( $vid < 1)
+        {
+            $data = creatApiData(1,'点赞或者取消点赞，用参数vid指定视频的id');
+            return outputApiData($data);
+        }
+        $vid = intval($vid);
+        //
+        $like = getItemFromArray($_GET,'like',0);
+        $like = intval($like);
+        if( $like === 0)
+        {
+            $data = creatApiData(1,'like参数为0，不知是要点赞还是取消点赞...');
+            return outputApiData($data);
+        }
+        $userId = User::getUserId();
+        $obj = new Like();
+        $operation = $like > 0 ? '点赞':'取消点赞';
+        $apiData = $obj->likeTheMovieOrNot($vid,$like,$userId);
+        //
+        $msg = is_string($apiData)? $apiData : "{$operation}成功";
+        $data = creatApiData(0,$msg, $apiData);
+        return outputApiData($data);
+    }
+
+    public function getMyHeroList()
+    {
+        if( false === self::isHaveLogin())
+        {
+            $data = creatApiData(1,"未登录...");
+            return  outputApiData($data);
+        }
+        $userId = User::getUserId();
+        //
+        $field = 'hero_id';
+        $sql = "select `{$field}` from `user_like_hero`  where `user_id` = {$userId}";
+        $list = DB::findAll($sql);
+        $idArr = array_column($list,$field);
+        $ids = implode(',',$idArr);
+        $userWhere = "`ename` in ({$ids})";
+        $baseWhere = Pvp::heroesWhere($_REQUEST);
+        $where = $baseWhere === '' ?  $userWhere : " {$userWhere} and ";
+        //
+        $p = getItemFromArray($_GET,'p',1);
+        $p = intval($p);
+        $pageSize = getItemFromArray($_GET,'pageSize',10);
+        $pageSize = intval($pageSize);
+        $obj = new  pvpModel();
+        $apiData = $obj->getHeroesList($where,$p,$pageSize);
+        $isSuccess = false === empty($apiData['list']) ;
+        $resMsg = true === $isSuccess ? '成功':'失败';
+        $data = creatApiData(0,"获取英雄列表数据{$resMsg}", $apiData);
+        return outputApiData($data,__FUNCTION__.'--所有英雄');
+    }
+
+    public function getMyVideoList()
+    {
+        $p = getItemFromArray($_GET,'p',1);
+        $p = intval($p);
+        $pageSize = getItemFromArray($_GET,'pageSize',10);
+        $pageSize = intval($pageSize);
+        //
+        $userId = User::getUserId();
+        $where = '';
+        $obj = new  VideoModel();
+        $join = "inner join `user_like_movie` b on a.vid = b.movie_id where b.`user_id`={$userId}";
+        $apiData = $obj->getAllByPage($where,$p,$pageSize,'', $join);
+        $isSuccess = false === empty($apiData['list']) ;
+        $resMsg = true === $isSuccess ? '成功':'失败';
+        $data = creatApiData(0,"获取列表数据{$resMsg}", $apiData);
+        return outputApiData($data,__FUNCTION__.'--所有视频');
     }
 
     public function getUserInfo()

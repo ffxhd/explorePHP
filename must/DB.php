@@ -47,6 +47,11 @@ class DB{
 		return self::$db ->query($sql);
 	}
 
+    public static function getAffectedRows()
+    {
+        return self::$db->getAffectedRows();
+    }
+
     public static function multiQuery($sql)
 	{
 	    self::init();

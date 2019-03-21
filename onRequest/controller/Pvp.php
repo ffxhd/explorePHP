@@ -44,17 +44,17 @@ class Pvp
 
     //===============================================================
 
-    protected function where_heroName($name)
+    protected static function where_heroName($name)
     {
         return "`cname` like '%{$name}%'";
     }
 
-    protected function heroesWhere($rawSubmit)
+    public static function heroesWhere($rawSubmit)
     {
         $name = getWashedData($rawSubmit,'hero_name','');
         if($name !== '')
         {
-            return $this->where_heroName($name);
+            return self::where_heroName($name);
         }
         $type = getItemFromArray($rawSubmit,'hero_type',null);
         $type = intval($type);

@@ -78,6 +78,12 @@
     </span>
     <a href="" target="_blank" class="test">测试</a>
 </p>
+<p>我点赞了的英雄的列表
+    <span class="testUrl">
+        /<span class="controller">user</span>/<span>getMyHeroList</span>
+    </span>
+    <a href="" target="_blank" class="test">测试</a>
+</p>
 <table cellpadding="10" cellspacing="0" border="1">
     <caption>参数</caption>
     <thead>
@@ -610,6 +616,12 @@
     <a href="/video/getList?is_hot=0" target="_blank" style="margin-left:4%">全部视频</a>
     <a href="/video/getList?is_hot=1&pageSize=5" target="_blank" style="margin-left:4%">热播视频</a>
 </p>
+<p>我点赞了的视频的列表
+    <span class="testUrl">
+        /<span class="controller">user</span>/<span>getMyVideoList</span>
+    </span>
+    <a href="" target="_blank" class="test">测试</a>
+</p>
 <table cellpadding="10" cellspacing="0" border="1">
     <caption>参数</caption>
     <thead>
@@ -1024,6 +1036,53 @@
     </pre>
 </div>
 <hr/>
+<p>视频，点赞和取消点赞
+    <span class="testUrl">
+        /<span class="controller">user</span>/<span>likeTheMovieOrNot</span>
+    </span>
+</p>
+<label for="movie_id">视频vid</label><input type="number" id="movie_id" value="135385547">
+<button type="button" onclick="obj.likeTheMovieOrNot(1)">点赞</button>
+<button type="button" style="margin-left:2%" onclick="obj.likeTheMovieOrNot(-1)">取消点赞</button>
+<table cellpadding="10" cellspacing="0" border="1">
+    <caption>参数</caption>
+    <thead>
+    <tr>
+        <th>参数</th>
+        <th>是否必需</th>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>解释</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>编号</td>
+        <td>必需</td>
+        <td>vid</td>
+        <td>Integer</td>
+        <td>视频记录的vid</td>
+    </tr>
+    <tr>
+        <td>点赞？取消点赞</td>
+        <td>必需</td>
+        <td>like</td>
+        <td>Integer</td>
+        <td>1:点赞；<br/>-1：取消点赞</td>
+    </tr>
+    </tbody>
+</table>
+<div>
+    返回的数据：
+    <pre>
+      {
+        "errorCode": 0,
+        "msg": "点赞成功",
+        "data": []
+    }
+    </pre>
+</div>
+<hr/>
 <div id="dialog" class="dialog">
     <button type="button" class="dialogCloseBtn" onclick="obj.closeDialog()">关闭</button>
     <div id="ajaxError" class="dialogContainer">ajax错误</div>
@@ -1143,6 +1202,26 @@
                 type: "GET",
                 data :{
                     eName : $("#heroId").val(),
+                    like: like
+                },
+                beforeSend:function(xhr){
+                    let sess_id = sessionStorage.getItem('sessionId');
+                    console.log('sess_id',sess_id);
+                    //xhr.setRequestHeader("Cookie","PHPSESSID=" + sess_id);
+                },
+                success:function (result) {
+                    alert(result.msg);
+                }
+            });
+        }
+        likeTheMovieOrNot(like)
+        {
+            let _this = this;
+            this.triggerAjax({
+                url :'/user/likeTheMovieOrNot',
+                type: "GET",
+                data :{
+                    vid : $("#movie_id").val(),
                     like: like
                 },
                 beforeSend:function(xhr){

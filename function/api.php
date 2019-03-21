@@ -20,8 +20,13 @@ function creatApiData($errorCode,$msg,$data = [])
     ];
 }
 
+use \must\DB;
 function outputApiData($data, $debugMsg = '')
 {
+    if( true === IS_LOCAL)
+    {
+        $data['sqlArr'] = DB::fetchSqlArr();
+    }
     if( true === $_SERVER['IS_AJAX'] )//=== $_SERVER['IS_AJAX']
     {
         echo json_encode($data,JSON_UNESCAPED_UNICODE );

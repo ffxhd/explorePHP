@@ -327,5 +327,10 @@ EOF;
         $sql='delete from '.$table.' where '.$where;
         return $this->query($sql);
     }
+
+    public function getAffectedRows()
+    {
+        return $this->conn->affected_rows;
+    }
 }
 

@@ -132,29 +132,4 @@ class HeroModel
         return $list;
     }
 
-    public function likeTheHeroOrNot($eName,$like,$userId)
-    {
-        $isAdd = $like > 0;
-        //like_count总数增加
-        $change = true === $isAdd ? '+1' : '-1';
-        $sql = "update `honor_main` set `like_count` = `like_count` {$change} where `ename` = {$eName}";
-        $result_hero = DB::query($sql);
-        //插入记录或者删除记录
-        $table = 'user_like_hero';
-        if( true === $isAdd)
-        {
-            $result_user = DB::insert($table,[
-                'user_id'=>$userId,
-                'hero_id'=>$eName
-            ]);
-        }
-        else
-        {
-            $result_user = DB::delete($table,[
-                "user_id = {$userId}",
-                "hero_id = {$eName}"
-            ]);
-        }
-        return [$result_hero,$result_user];
-    }
 }
