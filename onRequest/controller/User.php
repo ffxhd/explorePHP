@@ -11,6 +11,7 @@ use must\DB;
 use  \onRequest\core\upload;
 use  \onRequest\core\dir;
 use \must\PC;
+use onRequest\spiderModel\HeroModel;
 class User
 {
     public static $avatarTempDir = 'temp_uploads';
@@ -51,11 +52,48 @@ from `user` where `user_name` = '{$userName}'";
         outputApiData($data);
     }
 
-    protected static function isHaveLogin()
+    public static function isHaveLogin()
     {
         //say('$_SESSION',$_SESSION);
         $userInfo = getItemFromArray($_SESSION,'userInfo',[]);
         return  false === empty($userInfo);
+    }
+
+    public static function  getUserId()
+    {
+        return  $_SESSION['userInfo']['id'];
+    }
+
+    public function  likeTheHeroOrNot()
+    {
+        if( false === User::isHaveLogin())
+        {
+            $data = creatApiData(1,"未登录...");
+            return  outputApiData($data);
+        }
+        //
+        $eName = getItemFromArray($_GET,'eName',0);
+        if( $eName < 1)
+        {
+            $data = creatApiData(1,'点赞或者取消点赞，用参数eName指定英雄的id');
+            return outputApiData($data);
+        }
+        $eName = intval($eName);
+        //
+        $like = getItemFromArray($_GET,'like',0);
+        $like = intval($like);
+        if( $like === 0)
+        {
+            $data = creatApiData(1,'like参数为0，不知是要点赞还是取消点赞...');
+            return outputApiData($data);
+        }
+        $userId = User::getUserId();
+        $obj = new HeroModel();
+        $apiData = $obj->likeTheHeroOrNot($eName,$like,$userId);
+        //
+        $operation = $like > 0 ? '点赞':'取消点赞';
+        $data = creatApiData(0,"{$operation}成功",$apiData);
+        return outputApiData($data);
     }
 
     public function getUserInfo()

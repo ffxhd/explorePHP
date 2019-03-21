@@ -300,9 +300,9 @@ class PvpDb extends PvpSpider
 
         $table = 'item_border_breakout';
         //
-        $where = '' === $where ? '': "where {$where}";
+        $whereCount = '' === $where ? '': "where {$where}";
         $rowsField = 'totalRows';
-        $sqlCount = "select count(`id`) as `{$rowsField}` from `{$table}` {$where}";
+        $sqlCount = "select count(`id`) as `{$rowsField}` from `{$table}` {$whereCount}";
         $totalRows = DB::findResultFromTheInfo($sqlCount,$rowsField);
         $totalPage = page::getTotalPage($totalRows,$pageSize);
         $offset = page::getOffsetByPage($p,$totalPage,$pageSize);
@@ -314,7 +314,7 @@ class PvpDb extends PvpSpider
         /*$imgField = "concat('https://game.gtimg.cn/images/yxzj/img201606/itemimg/'".
             ",`{$itemIdField}`,'.jpg') as `item_img`";*/
         //$sql = "select {$fields},{$imgField} from `{$table}` {$where}  limit {$offset},{$pageSize}";
-        $sqlPart = $this->searchSummonerSql($where);
+        $sqlPart = $this->searchBorderBreakOutItemSql($where);
         $sql = "{$sqlPart} limit {$offset},{$pageSize}";
         $list = DB::findAll($sql);
         $res = $this->fieldsArr_BorderBreakOutItem();

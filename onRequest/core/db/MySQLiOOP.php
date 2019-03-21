@@ -315,11 +315,15 @@ EOF;
 
     /**删除函数
      * @param string $table
-     * @param string $where
+     * @param string|array $where
      * @return bool
      */
     function delete($table,$where)
     {
+        if(true === is_array($where))
+        {
+            $where = implode(' and ',$where);
+        }
         $sql='delete from '.$table.' where '.$where;
         return $this->query($sql);
     }

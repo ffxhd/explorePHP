@@ -41,7 +41,9 @@ class SessionRedis
     {
         $this->connectRedisOrNot();
         $session_id = $this->getCompleteKey($session_id);
+        //say('$session_id',$session_id);
         $session_data = $this->redis->get($session_id);//获取redis中的指定记录
+        //say('$session_data',$session_data);
         if( $session_data === false )
         {
            return  [];

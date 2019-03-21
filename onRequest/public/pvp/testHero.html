@@ -976,7 +976,54 @@
     <button type="button" onclick="obj.modifyUserInfo(this)" data-url="/user/modifyUserInfo">修改用户资料</button>
     <hr/>
 </div>
-
+<hr/>
+<p>进入英雄详情页后，点赞和取消点赞
+    <span class="testUrl">
+        /<span class="controller">user</span>/<span>likeTheHeroOrNot</span>
+    </span>
+</p>
+<label for="heroId">英雄id</label><input type="number" id="heroId" value="529">
+<button type="button" onclick="obj.likeTheHeroOrNot(1)">点赞</button>
+<button type="button" style="margin-left:2%" onclick="obj.likeTheHeroOrNot(-1)">取消点赞</button>
+<table cellpadding="10" cellspacing="0" border="1">
+    <caption>参数</caption>
+    <thead>
+    <tr>
+        <th>参数</th>
+        <th>是否必需</th>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>解释</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>英雄编号</td>
+        <td>必需</td>
+        <td>eName</td>
+        <td>Integer</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>点赞？取消点赞</td>
+        <td>必需</td>
+        <td>like</td>
+        <td>Integer</td>
+        <td>1:点赞；<br/>-1：取消点赞</td>
+    </tr>
+    </tbody>
+</table>
+<div>
+    返回的数据：
+    <pre>
+      {
+        "errorCode": 0,
+        "msg": "点赞成功",
+        "data": []
+    }
+    </pre>
+</div>
+<hr/>
 <div id="dialog" class="dialog">
     <button type="button" class="dialogCloseBtn" onclick="obj.closeDialog()">关闭</button>
     <div id="ajaxError" class="dialogContainer">ajax错误</div>
@@ -999,9 +1046,15 @@
                 type: config.type,
                 data: config.data,
                 dataType : "json",
-                before:function(xhr)
+                beforeSend:function(xhr)
                 {
                     _this.divObj.html('');
+                    //console.log('typeof config.beforeSend',typeof config.beforeSend);
+                    if( typeof config.beforeSend === "function")
+                    {
+                        //console.log('运行beforeSend');
+                        config.beforeSend(xhr);
+                    }
                 },
                 complete:function()
                 {
@@ -1077,6 +1130,28 @@
                 success:function (result) {
                     alert(result.msg);
                     _this.userInfo = result.data;
+                    document.cookie="PHPSESSID=" + result.session_id;
+                    sessionStorage.setItem('sessionId',result.session_id);
+                }
+            });
+        }
+        likeTheHeroOrNot(like)
+        {
+            let _this = this;
+            this.triggerAjax({
+                url :'/user/likeTheHeroOrNot',
+                type: "GET",
+                data :{
+                    eName : $("#heroId").val(),
+                    like: like
+                },
+                beforeSend:function(xhr){
+                    let sess_id = sessionStorage.getItem('sessionId');
+                    console.log('sess_id',sess_id);
+                    //xhr.setRequestHeader("Cookie","PHPSESSID=" + sess_id);
+                },
+                success:function (result) {
+                    alert(result.msg);
                 }
             });
         }

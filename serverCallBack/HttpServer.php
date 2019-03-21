@@ -80,7 +80,8 @@ class HttpServer
             //为了可以半路停下来
             $_SERVER['swooleResponse'] = $response;
             //
-            /*say(' $request', $request);
+            //say(' $request', $request);
+            /*
             say(' $request-rawContent', $request->rawContent());
             say(' $request-getData', $request->getData());*/
             isAjaxOrNot( $request->header);
@@ -88,7 +89,7 @@ class HttpServer
             如果cookie中的PHPSESSID为空，需要生成唯一的sessionId
             便于业务操作*/
             $requestTime = $_SERVER['REQUEST_TIME'] = $_SERVER['request_time'];
-            $session_id = SessionFactory::initialSessionFromPool($request->fd,$response,$requestTime);
+            $session_id = SessionFactory::initialSessionFromPool($request->fd);
             $_SERVER['session_id'] = $session_id;
             //业务操作
             global $config;
@@ -97,7 +98,7 @@ class HttpServer
             //将$_SESSION弄到session池中
             if( false === empty($_SESSION))
             {
-                SessionFactory::setSessionToPool($session_id, $requestTime);
+                SessionFactory::setSessionToPool($session_id,  $requestTime, $response);
             }
         }
         catch (\Error $e)

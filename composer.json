@@ -4,6 +4,7 @@
         "ext-json": "*",
         "ext-exif": "*",
         "ext-mysqli": "*",
+        "ext-redis": "*",
         "ext-iconv": "*",
         "jaeger/querylist-phantomjs": "^4.0"
     }
