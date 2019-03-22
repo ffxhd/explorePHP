@@ -65,7 +65,10 @@ class Video
         $obj = new  VideoModel();
         $pageSize = getItemFromArray($_GET,'pageSize',5);
         $pageSize = intval($pageSize);
-        $apiData = $obj->getMostHotVideos($pageSize);
+        $gameName = getWashedData($_GET,'gameName','');
+        $gameName = $gameName ===''? '王者荣耀': $gameName;
+        $where = "`game_name`='{$gameName}'";
+        $apiData = $obj->getMostHotVideos($pageSize,$where);
         $isSuccess = false === empty($apiData) ;
         $resMsg = true === $isSuccess ? '成功':'失败';
         $apiData = ['list' => $apiData ];

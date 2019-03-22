@@ -96,9 +96,8 @@ class VideoModel
         return $this->getAllByPage($where,$p,$pageSize);
     }
 
-    public function getMostHotVideos($pageSize)
+    public function getMostHotVideos($pageSize,$where = '')
     {
-        $where = '';
         $orderBy = 'order by  `counts` desc';
         $sqlPart = $this->searchSql($where);
         $sql = "{$sqlPart} {$orderBy} limit 0,{$pageSize}";

@@ -410,20 +410,39 @@
             <table cellpadding="10" cellspacing="0" border="1">
                 <tr>
                     <th>常规模式</th>
-                    <td> 0全部</td>
-                    <td> 1攻击</td>
-                    <td>2法术</td>
-                    <td>3防御</td>
-                    <td>4移动</td>
-                    <td>5打野</td>
-                    <td>7辅助</td>
-                </tr>
-                <tr style="background-color:skyblue">
                     <th>边境突围模式</th>
-                    <td>0全部</td>
-                    <td>1装备</td>
-                    <td>2道具</td>
-                    <td>3额外技能</td>
+                </tr>
+                <tr>
+                    <td> 0全部</td>
+                    <td>0全部 </td>
+                </tr>
+                <tr>
+                    <td> 1攻击
+                        <a href="/pvp/getItemList?parent_type=0&type=1"  target="_blank" style="margin-left:10px">测试</a>
+                    </td>
+                    <td>1装备
+                        <a href="/pvp/getItemList?parent_type=1&type=1"  target="_blank" style="margin-left:10px">测试</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2法术  <a href="/pvp/getItemList?parent_type=0&type=2"  target="_blank" style="margin-left:10px">测试</a></td>
+                    <td>2道具 <a href="/pvp/getItemList?parent_type=1&type=2"  target="_blank" style="margin-left:10px">测试</a></td>
+                </tr>
+                <tr>
+                    <td>3防御  <a href="/pvp/getItemList?parent_type=0&type=3"  target="_blank" style="margin-left:10px">测试</a></td>
+                    <td>3额外技能 <a href="/pvp/getItemList?parent_type=1&type=3"  target="_blank" style="margin-left:10px">测试</a></td>
+                </tr>
+                <tr>
+                    <td>4移动  <a href="/pvp/getItemList?parent_type=0&type=4"  target="_blank" style="margin-left:10px">测试</a></td>
+                    <td rowspan="3"></td>
+                </tr>
+                <tr>
+                    <td>5打野  <a href="/pvp/getItemList?parent_type=0&type=5"  target="_blank" style="margin-left:10px">测试</a></td>
+                   <!-- <td></td>-->
+                </tr>
+                <tr>
+                    <td>7辅助  <a href="/pvp/getItemList?parent_type=0&type=7"  target="_blank" style="margin-left:10px">测试</a></td>
+                    <!--<td></td>-->
                 </tr>
             </table>
             <pre>
@@ -689,7 +708,7 @@
     author_count  作者id
     author_src 作者头像
 </pre>
-<p>视频列表 /video/getInfoWithRelatedVideos
+<p>视频详情 /video/getInfoWithRelatedVideos
     <a href="/video/getInfoWithRelatedVideos?id=104857909" target="_blank" style="margin-left:4%">详情+推荐列表</a>
 </p>
 <table cellpadding="10" cellspacing="0" border="1">
@@ -736,6 +755,13 @@
         <td>pageSize</td>
         <td>Integer</td>
         <td>用以指定需要多少条记录。默认5条</td>
+    </tr>
+    <tr>
+        <td>游戏名称</td>
+        <td>非必需</td>
+        <td>gameName</td>
+        <td>String</td>
+        <td>例如：绝地求生。默认“王者荣耀”</td>
     </tr>
     </tbody>
 </table>

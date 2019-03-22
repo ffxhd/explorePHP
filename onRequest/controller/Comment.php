@@ -19,7 +19,8 @@ class Comment
             $data = creatApiData(1,"未登录...");
             return  outputApiData($data);
         }
-        say('欢迎添加评论');
+        //say('欢迎添加评论');
+        $data = creatApiData(0,'评论成功',[]);
         return outputApiData($data);
     }
 }
