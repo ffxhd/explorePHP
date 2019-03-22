@@ -34,22 +34,31 @@ class VideoModel
             ",`ename`,'/',`ename`,'.jpg') as `hero_avatar`",*/
     ];
 
-    public function searchSql($where)
+    public function searchSql($where,$otherField = '')
+    {
+        $where = '' === $where ? '': "where {$where}";
+        $sqlBase = $this->searchFieldsNoWhere($otherField);
+        return "{$sqlBase} {$where}";
+    }
+
+    protected function searchFieldsNoWhere($otherField = '')
     {
         $table = $this->videoConfig['table'];
         $fieldsArr = $this->videoConfig['fieldsArr'];
         $fields = joinFieldsToSelect($fieldsArr);
         //$imgField = $this->heroConfig['imgField'];
-        $where = '' === $where ? '': "where {$where}";
-        return "select {$fields}from `{$table}` {$where}";//,{$imgField}
+        return "select {$fields} {$otherField} from `{$table}`";//,{$imgField}
     }
 
-    public function getAllByPage($where,$p,$pageSize,$orderBy='',$join='')
+    public function getAllByPage($where,$p,$pageSize,$orderBy='',$userId=null,$joinType='left')
     {
         $table = $this->videoConfig['table'];
+        $userId = $userId === null ? 'null' : $userId;
         $whereCount = '' === $where ? '': "where {$where}";
         $rowsField = 'totalRows';
-        $join = $join !== ''? " as a {$join}" : $join;
+        $join = " as a  {$joinType} join 
+        (select `movie_id` from `user_like_movie` where `user_id` = {$userId}) as b
+         on a.`vid` = b.`movie_id` ";
         $sqlCount = "select count(`vid`) as `{$rowsField}` from `{$table}` {$join} {$whereCount}";
         $totalRows = DB::findResultFromTheInfo($sqlCount,$rowsField);
         //say('$totalRows',$totalRows);
@@ -58,9 +67,11 @@ class VideoModel
         $offset = page::getOffsetByPage($p,$totalPage,$pageSize);
         //say('$offset',$offset);
         //
-        $sqlPart = $this->searchSql($where);
+        $otherField = ",if(b.`movie_id`=a.`vid`,1,0) as `is_like`";
+        $sqlPart = $this->searchFieldsNoWhere($otherField);
         $orderBy = $orderBy === ''? '' : $orderBy;
-        $sql = "{$sqlPart} {$join} {$orderBy} limit {$offset},{$pageSize}";
+        $where = '' === $where ? '': "where {$where}";
+        $sql = "{$sqlPart} {$join} {$where} {$orderBy} limit {$offset},{$pageSize}";
         $list = DB::findAll($sql);
         $data = [
             'list' => $list,
@@ -99,14 +110,20 @@ class VideoModel
         return $data;
     }
 
-    public function getInfoWithRelatedVideos($id)
+    public function getInfoWithRelatedVideos($id,$userId=null)
     {
+        $userId = $userId === null ? 'null' : $userId;
         $table = $this->videoConfig['table'];
         $sqlArr = [];
         $fieldsArr = $this->videoConfig['fieldsArr'];
         $fields = joinFieldsToSelect($fieldsArr);
-        $sqlArr['info'] = "select {$fields}from  `{$table}` where `vid` = {$id}";
+        //$sqlArr['info'] = "select {$fields}from  `{$table}` where `vid` = {$id}";
+        $sqlArr['info'] = "select {$fields}, if(b.`movie_id` = a.`vid`,1,0) as is_like
+from  `{$table}` as a 
+left join ( select movie_id from user_like_movie where user_id = {$userId} ) as b
+ on a.vid = b.movie_id  where a.`vid` = {$id}";
         $data['info'] = DB::findOne($sqlArr['info']);
+        $data['info']['is_like'] = $data['info']['is_like'] === '1';
 
         $type =  $data['info'] ['game_name'];
         $table = 'related_movie';

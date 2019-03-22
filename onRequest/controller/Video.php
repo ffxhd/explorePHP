@@ -13,6 +13,12 @@ class Video
 {
     public function getList()
     {
+        $userId = null;
+        if( true === User::isHaveLogin())
+        {
+            $userId = User::getUserId();
+        }
+        //
         $isHot = getWashedData($_REQUEST,'is_hot',0);
         $p = getItemFromArray($_GET,'p',1);
         $p = intval($p);
@@ -24,7 +30,7 @@ class Video
         $isHot = $isHot > 0;
         if( false === $isHot )
         {
-            $apiData = $obj->getAllByPage($where,$p,$pageSize);
+            $apiData = $obj->getAllByPage($where,$p,$pageSize,'',$userId,'left');
         }
         else
         {
@@ -38,10 +44,16 @@ class Video
 
     public function getInfoWithRelatedVideos()
     {
+        $userId = null;
+        if( true === User::isHaveLogin())
+        {
+            $userId = User::getUserId();
+        }
+        //
         $id = getItemFromArray($_GET,'id',1);
         $id = intval($id);
         $obj = new  VideoModel();
-        $apiData = $obj->getInfoWithRelatedVideos($id);
+        $apiData = $obj->getInfoWithRelatedVideos($id,$userId);
         $isSuccess = false === empty($apiData['info']) ;
         $resMsg = true === $isSuccess ? '成功':'失败';
         $data = creatApiData(0,"获取列表数据{$resMsg}", $apiData);

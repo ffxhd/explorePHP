@@ -26,12 +26,18 @@ class PvpDb extends PvpSpider
     ];
     public function searchHeroSql($where,$otherField = '')
     {
+        $where = '' === $where ? '': "where {$where}";
+        $sqlBase = $this->searchHeroFieldsNoWhere($otherField);
+        return "{$sqlBase} {$where}";
+    }
+
+    protected function searchHeroFieldsNoWhere($otherField = '')
+    {
         $table = $this->heroConfig['table'];
         $fieldsArr = $this->heroConfig['fieldsArr'];
         $fields = joinFieldsToSelect($fieldsArr);
         $imgField = $this->heroConfig['imgField'];
-        $where = '' === $where ? '': "where {$where}";
-        return "select {$fields},{$imgField} {$otherField} from `{$table}` {$where}";
+        return "select {$fields},{$imgField} {$otherField} from `{$table}` ";
     }
 
     public function getHeroesList($where,$p,$pageSize,$orderBy='',$userId=null,$joinType='left'):array
@@ -76,8 +82,9 @@ left join user_like_hero b on a.ename = b.hero_id limit 0,10*/
 
         //$sql = "select {$fields},{$imgField} from `{$table}` {$where} limit {$offset},{$pageSize}";
         $otherField = ",if(b.hero_id=a.ename,1,0) as `is_like`";
-        $sqlPart = $this->searchHeroSql($where,$otherField);
-        $sql = "{$sqlPart} {$join} {$orderBy} limit {$offset},{$pageSize}";
+        $sqlPart = $this->searchHeroFieldsNoWhere($otherField);
+        $where = '' === $where ? '': "where {$where}";
+        $sql = "{$sqlPart} {$join} {$where} {$orderBy} limit {$offset},{$pageSize}";
         $list = DB::findAll($sql);
         if( false === empty($list) /*&& false === IS_LOCAL*/)
         {

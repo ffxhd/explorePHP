@@ -56,7 +56,6 @@ EOF;
     {
         // TODO: Implement __destruct() method.
         $this->conn->close();
-        $this->sqlArr = [];
         $this->stmt = null;
     }
 
