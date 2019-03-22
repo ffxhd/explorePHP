@@ -80,7 +80,8 @@ class HttpServer
             //为了可以半路停下来
             $_SERVER['swooleResponse'] = $response;
             //
-            //say(' $request', $request);
+            // say(' $request', $request);
+            $_SERVER['x-real-ip'] = $request->header['x-real-ip'];
             /*
             say(' $request-rawContent', $request->rawContent());
             say(' $request-getData', $request->getData());*/

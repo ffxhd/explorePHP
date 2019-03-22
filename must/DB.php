@@ -58,10 +58,10 @@ class DB{
 		return self::$db ->multiQuery($sql);
 	}
 
-    public static function multiFind($sqlArr,$allItemAreList=false)
+    public static function multiFind($sqlArr)
     {
         self::init();
-        return self::$db ->multiFind($sqlArr,$allItemAreList);
+        return self::$db ->multiFind($sqlArr);
     }
 
 	public static function query_only($sql,$toInsert)

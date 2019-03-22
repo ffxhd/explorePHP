@@ -29,7 +29,8 @@ class HeroModel
         $fieldsArr = $this->getHeroMainFieldArr();
         $fields = joinFieldsToSelect($fieldsArr);
         $sqlArr = [];
-        $sqlArr['main'] = "select {$fields} from `honor_main` where `ename`= {$eName}";
+        $sqlField_main = 'main';
+        $sqlArr[$sqlField_main] = "select {$fields} from `honor_main` where `ename`= {$eName}";
         //皮肤
         $fieldsArr = [
             'id', 'ename', 'pf_name',
@@ -37,7 +38,7 @@ class HeroModel
         $skinField = "concat('https:',`lpf_src`) as `lpf_src`";
         $skinField2 = "concat('https:',`bpf_src`) as `bpf_src`";
         $fields = joinFieldsToSelect($fieldsArr);
-        $sqlArr['skin'] = "select {$fields},{$skinField},{$skinField2} from `honor_pf` where `ename`= {$eName}";
+        $sqlArr['skin'] = "select {$fields},{$skinField},{$skinField2} from `honor_pf` where `ename`= {$eName} ";
         //技能介绍
         $fieldsArr = [
             'id', 'ename', 'skill_name', 'cool_value', 'expend', 'skill_intr', 'skill_tips'
@@ -101,6 +102,8 @@ class HeroModel
         $sqlArr['video'] = "select {$fields},{$srcField1} from `honor_video` where `ename`= {$eName}";
         //
         $data = DB::multiFind($sqlArr);
+        $data[$sqlField_main] = $data[$sqlField_main][0];
+        $data[$sqlField_skillPlus] = $data[$sqlField_skillPlus][0];
         $data[$sqlField_skillPlus] = self::washSkillsPlusSuggestions($data[$sqlField_skillPlus]);
         $data[$sqField_match] = self::washInscriptionMatch($data[$sqField_match]);
         return $data;

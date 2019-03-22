@@ -215,7 +215,7 @@ class Pvp
         $where = $this->where_summonerName($keyword);
         $sqlArr['summoner'] = $obj->searchSummonerSql($where);
         //
-        $apiData = DB::multiFind($sqlArr,true);
+        $apiData = DB::multiFind($sqlArr);
         $apiData['item_0'] = $obj->washDesOfItemList($apiData['item_0'] );
         //say('$apiData[\'item_1\']',$apiData['item_1']);
         $apiData['item_1'] = $obj->washDesOfBorderBreakOutItemList($apiData['item_1'] );

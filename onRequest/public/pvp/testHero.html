@@ -40,6 +40,10 @@
 <h3>header头务必设置x-requested-with（不区分大小写，推荐X-Requested-With），
     值为XMLHttpRequest（固定值，区分大小写），否则返回的数据不是json格式
 </h3>
+<h3>凡是需要先登录才能进行操作的接口，
+    header头务必设置Cookie: PHPSESSID=， 等号后面紧跟登录接口给出session_id，
+    否则认为没有登录
+</h3>
 <p>
     获取 英雄单选框数据
     <span class="testUrl">
@@ -989,7 +993,7 @@
     <hr/>
 </div>
 <hr/>
-<p>进入英雄详情页后，点赞和取消点赞
+<p>进入英雄详情页后，点赞和取消点赞--GET---
     <span class="testUrl">
         /<span class="controller">user</span>/<span>likeTheHeroOrNot</span>
     </span>
@@ -1036,7 +1040,7 @@
     </pre>
 </div>
 <hr/>
-<p>视频，点赞和取消点赞
+<p>视频，点赞和取消点赞--GET---
     <span class="testUrl">
         /<span class="controller">user</span>/<span>likeTheMovieOrNot</span>
     </span>

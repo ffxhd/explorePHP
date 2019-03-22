@@ -1,6 +1,7 @@
 <?php
 $config = array(
     'host'=> true ===IS_LOCAL ? 'test.swoole.local' : '139.180.147.165',//test.swoole.local
+    'local_hostOnly_ip'=>'192.168.56.101',
     'favicon_ico'=>ROOT.'/favicon.ico',
     'session'=>[
         'name'=>'PHPSESSID',

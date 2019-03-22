@@ -111,10 +111,9 @@ EOF;
 
     /**
      * @param array $sqlArr
-     * @param bool $allItemAreList
      * @return array
      */
-    public function multiFind($sqlArr,$allItemAreList)
+    public function multiFind($sqlArr)
     {
         $this->sqlArr[] = $sqlArr;
         $con=$this->conn;
@@ -138,14 +137,14 @@ EOF;
             $result = $con->store_result();// 存储第一个结果集
             if( $result )
             {
-                $L = $result->num_rows;
+                //$L = $result->num_rows;
                 //say('$L',$L);
                 $data = $result->fetch_all(MYSQLI_ASSOC);
                 //say('fetch_all-$data',$data);
-                if( false === $allItemAreList && $L === 1)
+                /*if( false === $allItemAreList && $L === 1)
                 {
                     $data = $data[0];
-                }
+                }*/
                 $allData[$key] = $data;
                 $result->free();
                 $i++;
