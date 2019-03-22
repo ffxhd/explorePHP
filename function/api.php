@@ -27,6 +27,7 @@ function outputApiData($data, $debugMsg = '')
     {
         $data['sqlArr'] = DB::fetchSqlArr();
     }
+    DB::cleanSqlArr();
     global $config;
     $ajaxStr = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     if( true === $_SERVER['IS_AJAX'] )

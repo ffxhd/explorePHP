@@ -1119,6 +1119,69 @@
     </pre>
 </div>
 <hr/>
+<p>
+    评论视频---POST   /comment/addCommentForMovie
+</p>
+<label for="movieId_toComment">视频vid</label>
+<input type="number" value="135385547" id="movieId_toComment">
+<label for="comment_movie">评论：</label>
+<textarea id="comment_movie">弱弱的问一下，这个视频有帮助吗？</textarea>
+<button type="button" onclick="obj.addCommentForMovie()">添加评论</button>
+<table cellpadding="10" cellspacing="0" border="1">
+    <caption>参数</caption>
+    <thead>
+    <tr>
+        <th>参数</th>
+        <th>是否必需</th>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>解释</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>视频的编号</td>
+        <td>必需</td>
+        <td>movieId</td>
+        <td>Integer</td>
+        <td>视频记录的vid</td>
+    </tr>
+    <tr>
+        <td>评论的内容</td>
+        <td>必需</td>
+        <td>content</td>
+        <td>string</td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+<hr/>
+<p>
+    获取指定视频的评论列表 ---GET--- /comment/commentListOfMovie
+    <a href="/comment/commentListOfMovie?movieId=135385547" target="_blank">测试</a>
+</p>
+<table cellpadding="10" cellspacing="0" border="1">
+    <caption>参数</caption>
+    <thead>
+    <tr>
+        <th>参数</th>
+        <th>是否必需</th>
+        <th>参数名</th>
+        <th>类型</th>
+        <th>解释</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>视频的编号</td>
+        <td>必需</td>
+        <td>movieId</td>
+        <td>Integer</td>
+        <td>视频记录的vid</td>
+    </tr>
+    </tbody>
+</table>
+
 <div id="dialog" class="dialog">
     <button type="button" class="dialogCloseBtn" onclick="obj.closeDialog()">关闭</button>
     <div id="ajaxError" class="dialogContainer">ajax错误</div>
@@ -1259,6 +1322,25 @@
                 data :{
                     vid : $("#movie_id").val(),
                     like: like
+                },
+                beforeSend:function(xhr){
+                    let sess_id = sessionStorage.getItem('sessionId');
+                    console.log('sess_id',sess_id);
+                    //xhr.setRequestHeader("Cookie","PHPSESSID=" + sess_id);
+                },
+                success:function (result) {
+                    alert(result.msg);
+                }
+            });
+        }
+        addCommentForMovie()
+        {
+            this.triggerAjax({
+                url :'/comment/addCommentForMovie',
+                type: "POST",
+                data :{
+                    content : $("#comment_movie").val(),
+                    movieId: $("#movieId_toComment").val(),
                 },
                 beforeSend:function(xhr){
                     let sess_id = sessionStorage.getItem('sessionId');

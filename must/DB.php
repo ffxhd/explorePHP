@@ -1,19 +1,32 @@
 <?php
 namespace must;
 //工厂类,用于统一管理类的实例化
+use onRequest\core\db\MySQLiOOP as SpecifyDb;
 class DB{
 	public static $db = null;
-    public static $db_type;
+    public static $isNeedConnectServer = false;
     public static $config;
-    public static function initial_db_config($config)
+    public function __construct($config)
     {
-        self::$db_type = $config['class'];
         self::$config = $config;
+        if( 0 > 1)
+        {
+            self::$db = new  SpecifyDb('','','');
+        }
     }
+
+    /*public static function initial_db_config($config)
+    {
+
+    }*/
 
     public static function init()
     {
-        $db_type  = self::$db_type ;
+        self::$isNeedConnectServer = true;
+        if( self::$db !== null && self::$db->isConnecting())
+        {
+            return true;
+        }
         $config = self::$config;
         $host = $config['host'];//主机名
         $user = $config['user'];//用户名
@@ -21,8 +34,9 @@ class DB{
         $databaseName = $config['databaseName'];//数据库名
         $charset = $config['charset'];//字符集/编码
         unset($config);
-        self::$db = new $db_type($host,$user,$password,$databaseName,$charset);
-        //self::$db = new \onRequest\core\db\MySQLiOOP($host,$user,$password,$databaseName,$charset);
+        self::$db = new  SpecifyDb('','','');
+        self::$db->connectDbServer($host,$user,$password,$databaseName,$charset);
+        return true;
     }
 
     public static function showTables($db_name)
@@ -35,7 +49,19 @@ class DB{
 
     public static function fetchSqlArr()
     {
+        if( self::$db === null)
+        {
+            return [];
+        }
         return self::$db ->fetchSqlArr();
+    }
+
+    public static function cleanSqlArr()
+    {
+        if( self::$db !== null)
+        {
+            self::$db->cleanSqlArr();
+        }
     }
 
 	public static function query($sql)
@@ -134,7 +160,9 @@ class DB{
     {
         self::init();
         //清空表,从1开始
-        $sql = "TRUNCATE TABLE `{$table}`;ALTER TABLE `{$table}` AUTO_INCREMENT = 1";;
-        return self::$db ->multiQuery($sql);
+        $sqlArr = [];
+        $sqlArr[] = "TRUNCATE TABLE `{$table}`";
+        $sqlArr[] = "ALTER TABLE `{$table}` AUTO_INCREMENT = 1";;
+        return self::$db ->multiQuery($sqlArr);
     }
 }

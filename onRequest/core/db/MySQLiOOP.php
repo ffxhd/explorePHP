@@ -21,17 +21,13 @@ EOF;
         echo $str;
     }
 
-    /**
-     * MySQLiOOP constructor. 连接数据库
-     * @param $host
-     * @param $user
-     * @param $password
-     * @param $databaseName
-     * @param $charset
-     */
-    public function __construct($host,$user,$password,$databaseName,$charset)
+    public function isConnecting()
     {
-        $this->sqlArr = [];
+        return $this->conn->ping();
+    }
+
+    public function connectDbServer($host,$user,$password,$databaseName,$charset)
+    {
         if(  $this->conn != null )
         {
             return null;
@@ -50,6 +46,21 @@ EOF;
         }
         $conn->set_charset ($charset);
         return $conn;
+    }
+
+    /**connectDbServer
+     * MySQLiOOP constructor. 连接数据库
+     * @param $host
+     * @param $user
+     * @param $password
+     */
+    public function __construct($host,$user,$password)
+    {
+        if( 0 > 1 )
+        {
+            $this->conn = @new \mysqli($host,$user,$password);
+            $this->stmt = $this->conn->prepare('');
+        }
     }
 
     public function __destruct()
@@ -73,10 +84,14 @@ EOF;
         return $this->sqlArr;
     }
 
-    /**
-     * 执行sql语句
+    public function cleanSqlArr()
+    {
+       $this->sqlArr = [];
+    }
+
+    /**执行sql语句
      * @param string $sql
-     * @return bool 返回执行成功、资源或执行失败
+     * @return resource|\mysqli_result  返回执行成功、资源或执行失败
      */
     function query($sql)
     {
@@ -97,6 +112,7 @@ EOF;
      */
     function multiQuery($sqlArr)
     {
+        $this->sqlArr[] = $sqlArr;
         $conn = $this->conn;
         $sql = implode(';',$sqlArr);
         $query = $conn->multi_query($sql) ;
@@ -156,7 +172,7 @@ EOF;
     /**
      *列表
      *
-     *@param resource $query sql语句通过$conn->query 执行出来的资源
+     *@param resource|\mysqli_result $query sql语句通过$conn->query 执行出来的资源
      *@return array   返回列表数组
      **/
     function findAll($query)
@@ -165,7 +181,7 @@ EOF;
     }
 
     /**单条
-     * @param resource $query sql语句通过$conn->query执行出的来的资源
+     * @param resource|\mysqli_result $query sql语句通过$conn->query执行出的来的资源
      * @return array 返回单条信息数组
      */
     function findOne($query)
@@ -174,15 +190,20 @@ EOF;
         return $rs? $rs : array();
     }
 
+    /**
+     * @param resource|\mysqli_result $query
+     * @param $field
+     * @return mixed
+     */
     public function findResultFromTheInfo($query,$field)
     {
-        $obj = $query->fetch_object ();
+        $obj = $query->fetch_object();
         return $obj->$field;
     }
 
     /**
      * 指定行的指定字段的值
-     * @param resource $query $query sql语句通过$conn->query执行出的来的资源
+     * @param resource|\mysqli_result $query $query sql语句通过$conn->query执行出的来的资源
      * @param $row
      * @param string $field 指定字段的
      * @return mixed 返回指定行的指定字段的值
@@ -191,7 +212,7 @@ EOF;
     {
         /* fetch object array */
         $i = 0;
-        while ( $obj  =  $query -> fetch_object ())
+        while ( $obj  =  $query ->fetch_object())
         {
             if($i == $row )
             {
@@ -199,6 +220,7 @@ EOF;
             }
             $i ++;
         }
+        return '';
     }
 
     /**添加函数
@@ -281,7 +303,7 @@ EOF;
      * @param string $table  表名
      * @param array $arr 修改数组（包含字段和值的一维数组）
      * @param  string|array $where 条件
-     * @return bool
+     * @return bool|resource
      */
     function update($table,$arr,$where)
     {
@@ -314,7 +336,7 @@ EOF;
     /**删除函数
      * @param string $table
      * @param string|array $where
-     * @return bool
+     * @return bool|resource
      */
     function delete($table,$where)
     {

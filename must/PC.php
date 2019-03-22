@@ -42,7 +42,8 @@ class PC{
 	public static function run($config)
     {
 		self::$config = $config;
-		DB::initial_db_config($config['db_config']);
+		//DB::initial_db_config($config['db_config']);
+        new  DB($config['db_config']);
 		self::init_controller_and_method();
 	}
 
