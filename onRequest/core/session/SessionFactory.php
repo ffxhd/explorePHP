@@ -55,7 +55,16 @@ class SessionFactory
         //\console::sayMultiInBrowser('工厂setSessionToPool--self::$manager',self::$manager);
         self::write($session_id,$_SESSION,$request_time);
         $key = self::getSessionKey();
-        $response->cookie($key,$session_id, self::getFutureTime($request_time));
+        /*setcookie( string $name[,
+         string $value = ""[,
+         int $expire = 0[,
+         string $path = ""[,
+        string $domain = ""[,
+        bool $secure = false[,
+        bool $httponly = false]]]]]] ) : bool*/
+        $expire = self::getFutureTime($request_time);
+        $path = '/';
+        $response->cookie($key,$session_id, $expire, $path);
     }
 
     public static function getUniqueSessionId(int $fd):string

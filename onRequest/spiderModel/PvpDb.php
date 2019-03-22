@@ -24,18 +24,25 @@ class PvpDb extends PvpSpider
         'imgField'=>"concat('https://game.gtimg.cn/images/yxzj/img201606/heroimg/'".
             ",`ename`,'/',`ename`,'.jpg') as `hero_avatar`",
     ];
-    public function searchHeroSql($where)
+    public function searchHeroSql($where,$otherField = '')
     {
         $table = $this->heroConfig['table'];
         $fieldsArr = $this->heroConfig['fieldsArr'];
         $fields = joinFieldsToSelect($fieldsArr);
         $imgField = $this->heroConfig['imgField'];
         $where = '' === $where ? '': "where {$where}";
-        return "select {$fields},{$imgField} from `{$table}` {$where}";
+        return "select {$fields},{$imgField} {$otherField} from `{$table}` {$where}";
     }
 
-    public function getHeroesList($where,$p,$pageSize):array
+    public function getHeroesList($where,$p,$pageSize,$orderBy='',$userId=null,$joinType='left'):array
     {
+        /*SELECT ename,cname ,if(b.hero_id=a.ename,1,0) as is_like
+from honor_main as a
+left join ( select hero_id from user_like_hero where user_id = 1)
+         b on a.ename = b.hero_id limit 0,10*/
+        /*SELECT ename,cname ,if(b.hero_id=a.ename,1,0) as is_like
+from honor_main as a
+left join user_like_hero b on a.ename = b.hero_id limit 0,10*/
         static $i = 0;
         /*$fieldsArr = [
             'ename' => 'i',//i
@@ -47,9 +54,14 @@ class PvpDb extends PvpSpider
         //$table = 'hero_json';
         $table = $this->heroConfig['table'];
         //
+        $userId = $userId === null ? 'null' : $userId;
         $whereCount = '' === $where ? '': "where {$where}";
         $rowsField = 'totalRows';
-        $sqlCount = "select count(`id`) as `{$rowsField}` from `{$table}` {$whereCount}";
+        $join = " as a  {$joinType} join 
+        (select `hero_id` from user_like_hero where user_id = {$userId}) as b
+         on a.`ename` = b.`hero_id` ";
+        //$join = $join !== ''? " as a {$join}" : $join;
+        $sqlCount = "select count(`ename`) as `{$rowsField}` from `{$table}` {$join} {$whereCount}";
         $totalRows = DB::findResultFromTheInfo($sqlCount,$rowsField);
         //say('$totalRows',$totalRows);
         $totalPage = page::getTotalPage($totalRows,$pageSize);
@@ -63,8 +75,9 @@ class PvpDb extends PvpSpider
             ",`ename`,'/',`ename`,'.jpg') as `hero_avatar`";*/
 
         //$sql = "select {$fields},{$imgField} from `{$table}` {$where} limit {$offset},{$pageSize}";
-        $sqlPart = $this->searchHeroSql($where);
-        $sql = "{$sqlPart} limit {$offset},{$pageSize}";
+        $otherField = ",if(b.hero_id=a.ename,1,0) as `is_like`";
+        $sqlPart = $this->searchHeroSql($where,$otherField);
+        $sql = "{$sqlPart} {$join} {$orderBy} limit {$offset},{$pageSize}";
         $list = DB::findAll($sql);
         if( false === empty($list) /*&& false === IS_LOCAL*/)
         {
@@ -103,7 +116,7 @@ class PvpDb extends PvpSpider
         $this->StuffedHeroJSONIntoDB($list,$table,$fieldsArr_insert);
         $this->saveHeroesJsonToFile($str);
         $i++;
-        return $i === 1 ? $this->getHeroesList($where,$p,$pageSize) : [];
+        return $i === 1 ? $this->getHeroesList($where,$p,$pageSize,$orderBy,$join) : [];
     }
 
     //===============================================================

@@ -9,6 +9,8 @@
 namespace onRequest\controller;
 use must\DB;
 use onRequest\spiderModel\HeroModel;
+use onRequest\spiderModel\Like;
+use onRequest\controller\User;
 class Hero
 {
     protected function setFieldWithMean($fields,$fieldsMeans)
@@ -32,6 +34,16 @@ class Hero
         $eName = intval($eName);
         $obj = new HeroModel();
         $apiData = $obj->getAll($eName);
+        //
+        $isLike = false;
+        if( true === User::isHaveLogin())
+        {
+            $userId = User::getUserId();
+            $obj = new Like();
+            $isLike = $obj->isLikeTheHero($eName,$userId);
+        }
+        $apiData['is_like'] = $isLike;
+        //
         $data = creatApiData(0,'获取英雄的详情数据成功',$apiData);
         return outputApiData($data);
     }

@@ -142,21 +142,22 @@ from `user` where `user_name` = '{$userName}'";
         }
         $userId = User::getUserId();
         //
-        $field = 'hero_id';
+        /*$field = 'hero_id';
         $sql = "select `{$field}` from `user_like_hero`  where `user_id` = {$userId}";
         $list = DB::findAll($sql);
         $idArr = array_column($list,$field);
         $ids = implode(',',$idArr);
         $userWhere = "`ename` in ({$ids})";
         $baseWhere = Pvp::heroesWhere($_REQUEST);
-        $where = $baseWhere === '' ?  $userWhere : " {$userWhere} and ";
+        $where = $baseWhere === '' ?  $userWhere : " {$userWhere} and ";*/
+        $where = '';
         //
         $p = getItemFromArray($_GET,'p',1);
         $p = intval($p);
         $pageSize = getItemFromArray($_GET,'pageSize',10);
         $pageSize = intval($pageSize);
         $obj = new  pvpModel();
-        $apiData = $obj->getHeroesList($where,$p,$pageSize);
+        $apiData = $obj->getHeroesList($where,$p,$pageSize,'',$userId,'inner');
         $isSuccess = false === empty($apiData['list']) ;
         $resMsg = true === $isSuccess ? '成功':'失败';
         $data = creatApiData(0,"获取英雄列表数据{$resMsg}", $apiData);

@@ -16,6 +16,16 @@ class Like
     {
         $isAdd = $like > 0;
         //like_count总数增加
+        if( true === $isAdd)
+        {
+            $sql = "select  `id` from  `{$userLikeTable}` where `{$likeField}` = {$itsId}
+ and `user_id` = {$userId}";
+            $info = DB::findOne($sql);
+            if(false === empty($info))//已经点赞过了
+            {
+                return true;
+            }
+        }
         $change = true === $isAdd ? '+1' : '-1';
         $vToSet = true == $isAdd ? "`like_count` {$change}" :
             "if(like_count = 0, 0,like_count-1) ";
@@ -67,5 +77,19 @@ class Like
             $whereIdField, $likeField,$userLikeTable);
     }
 
+    protected function isLikeIt($table,$whereIdField,$itsId,$userId)
+    {
+        $sql = "select  `id` from  `{$table}` where `{$whereIdField}` = {$itsId}
+ and `user_id` = {$userId}";
+        $info = DB::findOne($sql);
+        return !empty($info);
+    }
+
+    public function isLikeTheHero($itsId,$userId)
+    {
+        $table = 'user_like_hero';
+        $whereIdField = 'hero_id';
+        return $this->isLikeIt($table,$whereIdField,$itsId,$userId);
+    }
 
 }

@@ -9,6 +9,7 @@
 namespace onRequest\controller;
 use onRequest\spiderModel\PvpDb as pvpModel;
 use must\DB;
+use onRequest\controller\User;
 class Pvp
 {
     protected  $isDebug = true;
@@ -73,13 +74,19 @@ class Pvp
 
     public function getHeroesList()
     {
+        $userId = null;
+        if( true === User::isHaveLogin())
+        {
+            $userId = User::getUserId();
+        }
+
         $where = $this->heroesWhere($_REQUEST);
         $p = getItemFromArray($_GET,'p',1);
         $p = intval($p);
         $pageSize = getItemFromArray($_GET,'pageSize',10);
         $pageSize = intval($pageSize);
         $obj = new  pvpModel();
-        $apiData = $obj->getHeroesList($where,$p,$pageSize);
+        $apiData = $obj->getHeroesList($where,$p,$pageSize,'',$userId,'left');
         $isSuccess = false === empty($apiData['list']) ;
         $resMsg = true === $isSuccess ? '成功':'失败';
         $data = creatApiData(0,"获取英雄列表数据{$resMsg}", $apiData);
