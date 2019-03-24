@@ -361,8 +361,10 @@ function throw_phpError($error_level,$error_message,$error_file,$error_line,$tra
     /* $error_level_arr = array(
          2=>''
      );*/
+    global $config;
+    $error_level = getItemFromArray($config['errorLevelExplain'],$error_level,$error_level);
     $errMsg =  "{$error_level}：{$error_message} in {$error_file} line {$error_line}";
-    $traceList = $traceList ?? debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+    $traceList = false === empty($traceList) ? $traceList : debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
     $trace = traceHTML($traceList,'html',$errMsg);
     echo $trace;
 }
@@ -371,7 +373,7 @@ function traceHTML($traceList,$way,$caption)
 {
     $isAlert = $way==='alert';
     $trace = true === $isAlert ? '' : <<<EOF
-    <mark style="font-size:24px">{$caption}</mark><hr/>
+    <p style="font-size:24px;color:black;background-color: yellow">{$caption}</p><hr/>
 <ul style="list-style-type: none">
 EOF;
     $wrap = true === $isAlert ? "\n" : '<br/>';

@@ -101,6 +101,6 @@ class Monitor
             //echo '重头开始监听：';
             //var_dump($allItems);
         }
-
+        return true;
     }
 }

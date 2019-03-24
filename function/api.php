@@ -23,29 +23,24 @@ function creatApiData($errorCode,$msg,$data = [])
 use \must\DB;
 function outputApiData($data, $debugMsg = '')
 {
+    $ip = $_SERVER['x-real-ip'];
     if( true === IS_LOCAL)
     {
         $data['sqlArr'] = DB::fetchSqlArr();
+        $data['ip'] = $ip;
     }
     DB::cleanSqlArr();
     global $config;
-    $ajaxStr = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-    if( true === $_SERVER['IS_AJAX'] )
+    if( true ===in_array($ip,$config['developer_host_ip_arr']))
     {
-        echo $ajaxStr;
-        return true;
+        if( false === $_SERVER['IS_AJAX'] )
+        {
+            $str = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT );
+            echo '<pre style="font-size:22px">'.$str . '</pre>';
+            return true;
+        }
     }
+    $ajaxStr = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     echo $ajaxStr;
     return true;
-    //say('$_SERVER[\'x-real-ip\']',$_SERVER['x-real-ip']);
-    //say('$config[\'local_hostOnly_ip\'] ',$config['local_hostOnly_ip'] );
-    /*if( $_SERVER['x-real-ip'] === $config['local_hostOnly_ip'] && false === $_SERVER['IS_AJAX'] )
-    {
-        $str = json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT );
-        echo '<pre style="font-size:22px">'.$str . '</pre>';
-    }
-    else//true === $_SERVER['IS_AJAX']//本意是仅限ajax
-    {
-        echo $ajaxStr;
-    }*/
 }

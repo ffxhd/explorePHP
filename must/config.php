@@ -1,7 +1,9 @@
 <?php
 $config = array(
     'host'=> true ===IS_LOCAL ? 'test.swoole.local' : '139.180.147.165',//test.swoole.local
-    'local_hostOnly_ip'=>'192.168.56.101',
+    'developer_host_ip_arr'=>[
+        '192.168.56.1'
+    ],
     'favicon_ico'=>ROOT.'/favicon.ico',
     'session'=>[
         'name'=>'PHPSESSID',
@@ -27,10 +29,19 @@ $config = array(
         'host'=>'127.0.0.1',
         'port'=>6379,
         'password'=>true ===IS_LOCAL ?'u1804-redis-psw':'u1810-redis-psw'
-    ]
+    ],
 
     //================================================
-
+    'errorLevelExplain'=>[
+        E_DEPRECATED => 'Deprecated',
+        E_NOTICE => 'Notice',
+        E_WARNING => 'Warning',
+        E_STRICT => 'Strict',
+        E_ERROR => 'Fatal Error',
+        E_PARSE => '语法解析错误',
+        E_CORE_ERROR => 'PHP初始化启动过程中发生致命错误',
+        E_CORE_WARNING => 'PHP初始化启动过程中发生的警告 (非致命错误)',
+    ]
 
 );
 

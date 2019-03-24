@@ -51,7 +51,7 @@ class HttpServer
     }
 
     //
-    public function onRequest($request, $response)
+    public function onRequest(\Swoole\Http\Request $request, \Swoole\Http\Response $response)
     {
         $uri = $request->server['request_uri'];
         if ($uri === '/favicon.ico')
@@ -93,16 +93,15 @@ class HttpServer
             $session_id = SessionFactory::initialSessionFromPool($request->fd);
             $_SERVER['session_id'] = $session_id;
             //业务操作
-            global $config;
             PC::$response = $response;
-            PC::run($config);
+            PC::run();
             //将$_SESSION弄到session池中
             if( false === empty($_SESSION))
             {
                 SessionFactory::setSessionToPool($session_id,  $requestTime, $response);
             }
         }
-        catch (\Error $e)
+        catch (\Error $e)//用于捕获 Fatal error、syntax error
         {
             $errFile = $e->getFile();
             $errLine = $e->getLine();
@@ -111,10 +110,12 @@ class HttpServer
             $errCode = $e->getCode();
             //$previous = $e->getPrevious();
             //say($previous,'$previous');
+            //say('try-catch捕获错误');
             throw_phpError($errCode,$errMsg, $errFile,$errLine,$errTrace);
         }
         $html = ob_get_clean();
         $response->end($html);
+        return true;
     }
 
     /**
@@ -158,8 +159,15 @@ class HttpServer
      * @param $worker_id
      * @return bool
      */
-    public function onWorkerStart($server, $worker_id)
+    public function onWorkerStart(\Swoole\Http\Server $server, $worker_id)
     {
+        //用于捕获 Strict Notice Warning
+        set_error_handler(function(int $errCode, string $errMsg, string $errFile, int $errLine )
+        {
+            //say('set_error_handler捕获到php错误');
+            throw_phpError($errCode,$errMsg, $errFile,$errLine);
+        } );
+        //
         say('onWorkerStart--赋值之前self::$workerId =',self::$workerId );
         self::$workerId = $worker_id;
         say('onWorkerStart--赋值之后self::$workerId=',self::$workerId ,

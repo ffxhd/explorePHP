@@ -23,8 +23,8 @@ class PC{
         $ctrl = getItemFromArray($arr,0, '');
         $ctrl = $ctrl === '' ?  $defaultController : $ctrl;
         $ctrl = ucfirst($ctrl);
-        $ctrl = "onRequest\\controller\\".$ctrl;
-        self::$controller = $ctrl;
+        $ctrlFull = "onRequest\\controller\\".$ctrl;
+        self::$controller = $ctrlFull;
         //
         $method  = getItemFromArray($arr,1, '');
         self::$method = $method;
@@ -33,14 +33,29 @@ class PC{
         //
         /*say($ctrl,'tpl-$ctrl');
         say($method,'C-$method');*/
-        $obj = new  $ctrl();
+        if( true === IS_LOCAL)
+        {
+            //检测方法是否存在
+            $rc = new  \ReflectionClass($ctrlFull);
+            if( false === $rc->hasMethod($method))
+            {
+                $data = creatApiData(-1000,"{$ctrl}控制器不存在{$method}()");
+                return outputApiData($data);
+            }
+            //是否为public
+
+
+            //
+        }
+        $obj = new  $ctrlFull();
         $obj->$method();
         unset($obj);
         //(new $ctrl())->$method();
     }
 
-	public static function run($config)
+	public static function run()
     {
+        global $config;
 		self::$config = $config;
 		//DB::initial_db_config($config['db_config']);
         new  DB($config['db_config']);
